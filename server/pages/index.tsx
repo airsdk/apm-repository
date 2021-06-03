@@ -30,6 +30,9 @@ export default function Home() {
           </p>
         </section>
 
+        <section className="contentContainer">
+        </section>
+
       </Layout>
 
   )

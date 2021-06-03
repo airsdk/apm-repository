@@ -27,3 +27,8 @@ button {
   cursor: pointer;
   border: none;
 }
+
+
+.contentContainer {
+  padding: 1em;
+}
