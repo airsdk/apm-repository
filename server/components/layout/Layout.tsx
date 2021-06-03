@@ -30,7 +30,24 @@ export default function Layout({
       <header className={styles.header}></header>
 
       <main>{children}</main>
+
+      <footer className={styles.footer}>
+        <a
+          href="https://airsdk.dev"
+          target="_blank"
+          rel="noopener noreferrer"
+        >
+          
+          <span className={styles.logo}>
+            <Image src="/images/logo.svg" alt="AIR SDK" width={32} height={32} />
+          </span>
+          {' '}AIR SDK
+        </a>
+      </footer>
+
     </div>
+
+    
   );
   return <div>{children}</div>;
 }
