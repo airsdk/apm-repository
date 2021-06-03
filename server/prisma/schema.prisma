@@ -1,0 +1,60 @@
+// This is your Prisma schema file,
+// learn more about it in the docs: https://pris.ly/d/prisma-schema
+
+datasource db {
+  provider = "mysql"
+  url      = env("DATABASE_URL")
+}
+
+generator client {
+  provider = "prisma-client-js"
+}
+
+
+model Publisher {
+  index         Int       @id @default(autoincrement())
+  name          String 
+  description   String       @default("")
+  url           String
+  packages      Package[]
+}
+
+model Package {
+  index         Int           @id @default(autoincrement())
+  name          String
+  description   String        @default("")
+  identifier    String
+  url           String
+  sourceUrl     String  
+  type          String        @default("ane")
+  version       String        @default("0.0.0")
+  published     Boolean       @default(false)
+  publishedAt   DateTime      @default(now())
+  dependencies  Dependency[]
+  parameters    Parameter[]
+  publisher     Publisher     @relation(fields: [publisherIndex], references: [index])
+  publisherIndex  Int     
+  tags          Tag[]
+}
+
+model Dependency {
+  index         Int       @id @default(autoincrement())
+  identifier    String
+  version       String
+  package       Package   @relation(fields: [packageIndex], references: [index])
+  packageIndex  Int
+}
+
+model Parameter {
+  index         Int       @id @default(autoincrement())
+  name          String
+  required      Boolean   @default(false)    
+  package       Package   @relation(fields: [packageIndex], references: [index])
+  packageIndex  Int
+}
+
+model Tag {
+  index         Int       @id @default(autoincrement())
+  name          String 
+  packages      Package[]
+}

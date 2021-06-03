@@ -1,0 +1,42 @@
+
+  .banner {
+    width: 100%;
+    padding: 5rem;
+    color: #fff;
+    background-color: #161925;
+  }
+  
+  
+
+  .title a {
+    color: #0070f3;
+    text-decoration: none;
+  }
+  
+  .title a:hover,
+  .title a:focus,
+  .title a:active {
+    text-decoration: underline;
+  }
+  
+  .title {
+    margin: 0;
+    line-height: 1.15;
+    font-size: 2.6rem;
+  }
+  
+  
+  .title,
+  .description {
+    text-align: center;
+  }
+  
+  .titleLogo {
+    vertical-align:middle;
+  }
+  
+  .description {
+    margin: 0;
+    line-height: 1.5;
+    font-size: 1.2rem;
+  }
