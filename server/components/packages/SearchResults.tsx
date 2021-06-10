@@ -2,6 +2,7 @@ import styles from "./SearchResults.module.css";
 import SearchResult from "./SearchResult";
 import Spinner from '../common/Spinner'
 import ErrorMessage from '../common/ErrorMessage'
+import type { Package } from 'types/package'
 
 export default function SearchResults({
   query,
@@ -10,12 +11,12 @@ export default function SearchResults({
   isError,
 }: {
   query: string;
-  packages: Array<Object>;
+  packages: Array<Package> | undefined;
   isLoading: boolean;
   isError: boolean;
 }) {
   if (isLoading) return <Spinner />;
-  if (isError) return <ErrorMessage />;
+  if (isError || packages == undefined) return <ErrorMessage />;
 
   return (
     <div className={styles.resultsContainer}>

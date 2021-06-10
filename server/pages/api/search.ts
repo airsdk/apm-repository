@@ -1,11 +1,7 @@
 import type { NextApiRequest, NextApiResponse } from "next";
 import prisma from "../../lib/prisma";
 
-type Data = {
-  name: string;
-};
-
-export default async (req: NextApiRequest, res: NextApiResponse<Data>) => {
+export default async (req: NextApiRequest, res: NextApiResponse) => {
   const { q } = req.query;
 
   const packages = await prisma.package.findMany({

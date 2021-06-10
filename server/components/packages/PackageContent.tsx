@@ -2,6 +2,8 @@ import Spinner from '../common/Spinner'
 import ErrorMessage from '../common/ErrorMessage'
 import Date from '../common/Date'
 
+import { Package } from 'types/package'
+
 import styles from './PackageContent.module.css'
 
 export default function PackageContent({
@@ -9,12 +11,12 @@ export default function PackageContent({
     isLoading,
     isError,
   }: {
-    packageData: Object;
+    packageData: Package | undefined;
     isLoading: boolean;
     isError: boolean;
   }) {
     if (isLoading) return <Spinner />;
-    if (isError) return <ErrorMessage />;
+    if (isError || packageData == undefined) return <ErrorMessage />;
 
     console.log( JSON.stringify(packageData));
 
@@ -28,6 +30,5 @@ export default function PackageContent({
             <p className={styles.publishedDate}>Published <Date dateString={packageData.publishedAt} /></p>
         </div>
     );
-
 
 }

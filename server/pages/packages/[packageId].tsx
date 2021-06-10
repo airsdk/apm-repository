@@ -1,16 +1,16 @@
 import Head from "next/head";
-import Image from "next/image";
 import { useRouter } from "next/router";
 
 import Layout, { siteTitle } from "../../components/layout/Layout";
 import NavBar from "../../components/layout/NavBar";
 import PackageContent from "../../components/packages/PackageContent";
+import { Package } from 'types/package';
 
 import styles from "./index.module.css";
 
 import {findOne} from '../../lib/queries'
 
-const Package = () => {
+const PackagePage = () => {
   const router = useRouter();
   const { packageId } = router.query;
 
@@ -32,4 +32,4 @@ const Package = () => {
   );
 };
 
-export default Package;
+export default PackagePage;

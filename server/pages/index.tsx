@@ -1,5 +1,4 @@
 import Head from "next/head";
-import Image from "next/image";
 
 import Layout, { siteTitle } from "../components/layout/Layout";
 import NavBar from "../components/layout/NavBar";
@@ -7,7 +6,7 @@ import SearchBar from "../components/search/SearchBar";
 
 import styles from "../styles/index.module.css";
 
-export default function Home() {
+export default function HomePage() {
   return (
     <Layout home>
       <Head>

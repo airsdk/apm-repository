@@ -1,9 +1,10 @@
 import useSWR from "swr";
+import type { Package } from 'types/package'
 
-const fetcher = (...args) => fetch(...args).then((res) => res.json());
+const fetcher = (input: RequestInfo, init: RequestInit) => fetch(input, init).then((res) => res.json());
 
-export function findMany(searchQuery: String) {
-  const { data, error } = useSWR(`/api/search/?q=${searchQuery}`, fetcher);
+export function findMany(searchQuery: String) : { packages: Array<Package> | undefined, isLoading: boolean, isError:boolean } {
+  const { data, error } = useSWR<Array<Package>>(`/api/search/?q=${searchQuery}`, fetcher);
 
   return {
     packages: data,
@@ -13,8 +14,8 @@ export function findMany(searchQuery: String) {
 }
 
 
-export function findOne(identifier:string) {
-  const { data, error } = useSWR(`/api/packages/${identifier}`, fetcher);
+export function findOne(identifier:string) : { data: Package | undefined, isLoading: boolean, isError:boolean } {
+  const { data, error } = useSWR<Package>(`/api/packages/${identifier}`, fetcher);
 
   var packageData = {};
   if (data)
@@ -23,8 +24,24 @@ export function findOne(identifier:string) {
   }
 
   return {
-    data: packageData,
+    data: data,
     isLoading: !error && !data,
     isError: error,
   };
 }
+
+
+// function packageFromObject( data : Object ) : Package {
+//   data.hasOwnProperty
+//   return new Package()
+//     name: data['name'],
+//     description: data['description'],
+//     identifier: data.identifier,
+//     index: data.index,
+//     publishedAt: data.publishedAt,
+//     type: data.type,
+//     url: data.url,
+//     version: data.version
+//   };
+// }
+

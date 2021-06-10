@@ -1,5 +1,4 @@
 import Head from "next/head";
-import Image from "next/image";
 import { useRouter } from "next/router";
 
 import Layout, { siteTitle } from "../../components/layout/Layout";
@@ -11,7 +10,7 @@ import styles from "./index.module.css";
 
 import {findMany } from '../../lib/queries'
 
-const Packages = () => {
+const PackagesPage = () => {
   const router = useRouter();
   const { q } = router.query;
   console.log(q);
@@ -38,4 +37,4 @@ const Packages = () => {
   );
 };
 
-export default Packages;
+export default PackagesPage;

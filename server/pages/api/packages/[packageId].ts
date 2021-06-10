@@ -1,11 +1,8 @@
 import type { NextApiRequest, NextApiResponse } from "next";
 import prisma from "../../../lib/prisma";
+import type { Package } from 'types/package'
 
-type Data = {
-  name: string;
-};
-
-export default async (req: NextApiRequest, res: NextApiResponse<Data>) => {
+export default async (req: NextApiRequest, res: NextApiResponse) => {
   const packageId = req.query.packageId;
 
   const packageData = await prisma.package.findFirst({
@@ -20,8 +17,6 @@ export default async (req: NextApiRequest, res: NextApiResponse<Data>) => {
       dependencies: true
     },
   });
-
-  console.log( packageData );
 
   if (packageData)
   {

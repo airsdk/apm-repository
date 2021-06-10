@@ -3,9 +3,10 @@ import Link from "next/link";
 import Date from "../common/Date"
 import styles from "./SearchResult.module.css";
 import PackageIcon from './PackageIcon'
+import { Package } from 'types/package'
 
-export default function SearchResult({ packageData }: { packageData: Object }) {
-  console.log(JSON.stringify(packageData));
+
+export default function SearchResult({ packageData }: { packageData: Package }) {
 
   return (
     <div className={styles.resultContainer}>

@@ -1,6 +1,4 @@
 import Head from "next/head";
-import Image from "next/image";
-import Link from "next/link";
 import styles from "./Layout.module.css";
 
 export const siteTitle = "AIR Package Repository";
@@ -39,7 +37,7 @@ export default function Layout({
         >
           
           <span className={styles.logo}>
-            <Image src="/images/logo.svg" alt="AIR SDK" width={32} height={32} />
+            <img src="/images/logo.svg" alt="AIR SDK" width={32} height={32} />
           </span>
           {' '}AIR SDK
         </a>
