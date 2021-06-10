@@ -17,9 +17,9 @@ export function findOne(identifier:string) {
   const { data, error } = useSWR(`/api/packages/${identifier}`, fetcher);
 
   var packageData = {};
-  if (data && data.length > 0)
+  if (data)
   {
-    packageData = data[0];
+    packageData = data;
   }
 
   return {

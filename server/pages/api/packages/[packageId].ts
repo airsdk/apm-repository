@@ -8,7 +8,7 @@ type Data = {
 export default async (req: NextApiRequest, res: NextApiResponse<Data>) => {
   const packageId = req.query.packageId;
 
-  const packages = await prisma.package.findMany({
+  const packageData = await prisma.package.findFirst({
     where: {
       published: true,
       identifier: String(packageId)
@@ -21,5 +21,15 @@ export default async (req: NextApiRequest, res: NextApiResponse<Data>) => {
     },
   });
 
-  res.status(200).json(packages);
+  console.log( packageData );
+
+  if (packageData)
+  {
+    res.status(200).json(packageData);
+  }
+  else 
+  {
+    res.status(404).json({})
+  }
+
 };
