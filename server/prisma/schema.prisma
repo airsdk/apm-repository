@@ -22,6 +22,7 @@ model Package {
   index          Int              @id @default(autoincrement())
   name           String
   description    String           @default("")
+  readme         String           @default("")
   identifier     String
   url            String
   type           String           @default("ane")

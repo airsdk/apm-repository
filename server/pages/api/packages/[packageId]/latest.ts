@@ -14,6 +14,10 @@ export default async (req: NextApiRequest, res: NextApiResponse) => {
       publisher: { select: { name: true, url: true } },
       tags: true,
       versions: {
+        include: {
+          dependencies: true,
+          parameters: true,
+        },
         where: {
           published: true,
         },

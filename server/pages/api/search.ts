@@ -2,15 +2,36 @@ import type { NextApiRequest, NextApiResponse } from "next";
 import prisma from "../../lib/prisma";
 
 export default async (req: NextApiRequest, res: NextApiResponse) => {
-  const { q } = req.query;
+  const { q, t } = req.query;
+
+  const tags = await prisma.tag.findMany({
+    where: {
+      name: {contains: String(q) }
+    },
+    select: {
+      packages: {
+        select: {
+          index: true
+        }
+      }
+    }
+  });
+  var tagPackageIndexes = tags.flatMap( t => t.packages.flatMap( p => p.index ) );
 
   const packages = await prisma.package.findMany({
     where: {
       published: true,
       OR: [
         { name: { contains: String(q) } },
-        { description: { contains: String(q) } },
         { identifier: { contains: String(q) } },
+        { description: { contains: String(q) } },
+        { readme: { contains: String(q) } },
+        { index: { in: tagPackageIndexes } },
+        // { tags: { 
+        //   where: { 
+        //     name: { contains: String(q) } 
+        //   }
+        // }}
       ],
     },
     include: { 
@@ -28,5 +49,6 @@ export default async (req: NextApiRequest, res: NextApiResponse) => {
     },
   });
 
+  // res.status(200).json(tagPackageIndexes);
   res.status(200).json(packages);
 };
