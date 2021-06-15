@@ -1,5 +1,5 @@
 import type { NextApiRequest, NextApiResponse } from "next";
-import prisma from "../../../lib/prisma";
+import prisma from "../../../../lib/prisma";
 import type { Package } from 'types/package'
 
 export default async (req: NextApiRequest, res: NextApiResponse) => {
@@ -8,13 +8,20 @@ export default async (req: NextApiRequest, res: NextApiResponse) => {
   const packageData = await prisma.package.findFirst({
     where: {
       published: true,
-      identifier: String(packageId)
+      identifier: String(packageId),
     },
-    include: { 
-      publisher: { select: { name: true, url: true } }, 
+    include: {
+      publisher: { select: { name: true, url: true } },
       tags: true,
-      parameters: true,
-      dependencies: true
+      versions: {
+        where: {
+          published: true,
+        },
+        orderBy: {
+          publishedAt: 'desc',
+        },
+        take: 1
+      },
     },
   });
 

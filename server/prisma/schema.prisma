@@ -10,51 +10,59 @@ generator client {
   provider = "prisma-client-js"
 }
 
-
 model Publisher {
-  index         Int       @id @default(autoincrement())
-  name          String 
-  description   String       @default("")
-  url           String
-  packages      Package[]
+  index       Int       @id @default(autoincrement())
+  name        String
+  description String    @default("")
+  url         String
+  packages    Package[]
 }
 
 model Package {
-  index         Int           @id @default(autoincrement())
-  name          String
-  description   String        @default("")
-  identifier    String
-  url           String
-  sourceUrl     String  
-  type          String        @default("ane")
-  version       String        @default("0.0.0")
-  published     Boolean       @default(false)
-  publishedAt   DateTime      @default(now())
-  dependencies  Dependency[]
-  parameters    Parameter[]
-  publisher     Publisher     @relation(fields: [publisherIndex], references: [index])
-  publisherIndex  Int     
-  tags          Tag[]
+  index          Int              @id @default(autoincrement())
+  name           String
+  description    String           @default("")
+  identifier     String
+  url            String
+  type           String           @default("ane")
+  published      Boolean          @default(false)
+  publishedAt    DateTime         @default(now())
+  publisher      Publisher        @relation(fields: [publisherIndex], references: [index])
+  publisherIndex Int
+  tags           Tag[]
+  versions       PackageVersion[]
+}
+
+model PackageVersion {
+  index        Int          @id @default(autoincrement())
+  package      Package      @relation(fields: [packageIndex], references: [index])
+  packageIndex Int
+  sourceUrl    String
+  version      String       @default("0.0.0")
+  published    Boolean      @default(false)
+  publishedAt  DateTime     @default(now())
+  dependencies Dependency[]
+  parameters   Parameter[]
 }
 
 model Dependency {
-  index         Int       @id @default(autoincrement())
-  identifier    String
-  version       String
-  package       Package   @relation(fields: [packageIndex], references: [index])
-  packageIndex  Int
+  index               Int            @id @default(autoincrement())
+  identifier          String
+  version             String
+  packageVersion      PackageVersion @relation(fields: [packageVersionIndex], references: [index])
+  packageVersionIndex Int
 }
 
 model Parameter {
-  index         Int       @id @default(autoincrement())
-  name          String
-  required      Boolean   @default(false)    
-  package       Package   @relation(fields: [packageIndex], references: [index])
-  packageIndex  Int
+  index               Int            @id @default(autoincrement())
+  name                String
+  required            Boolean        @default(false)
+  packageVersion      PackageVersion @relation(fields: [packageVersionIndex], references: [index])
+  packageVersionIndex Int
 }
 
 model Tag {
-  index         Int       @id @default(autoincrement())
-  name          String 
-  packages      Package[]
+  index    Int       @id @default(autoincrement())
+  name     String
+  packages Package[]
 }

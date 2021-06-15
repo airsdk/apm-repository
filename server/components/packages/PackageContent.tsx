@@ -24,10 +24,10 @@ export default function PackageContent({
         <div className={styles.container} >
             
             <div className={styles.title}>
-                <h1>{packageData.name} <span className={styles.version}>v{packageData.version}</span></h1>
+                <h1>{packageData.name} <span className={styles.version}>v{packageData.versions[0].version}</span></h1>
             </div>
 
-            <p className={styles.publishedDate}>Published <Date dateString={packageData.publishedAt} /></p>
+            <p className={styles.publishedDate}>Published <Date dateString={packageData.versions[0].publishedAt} /></p>
         </div>
     );
 

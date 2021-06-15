@@ -14,8 +14,18 @@ export default async (req: NextApiRequest, res: NextApiResponse) => {
       ],
     },
     include: { 
-      publisher: { select: { name: true, url: true } }, 
-      tags: true },
+      publisher: { select: { name: true, url: true } },
+      tags: true,
+      versions: {
+        where: {
+          published: true,
+        },
+        orderBy: {
+          publishedAt: 'desc',
+        },
+        take: 1
+      },
+    },
   });
 
   res.status(200).json(packages);
