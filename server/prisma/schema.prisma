@@ -35,23 +35,17 @@ model Package {
 }
 
 model PackageVersion {
-  index        Int          @id @default(autoincrement())
-  package      Package      @relation(fields: [packageIndex], references: [index])
+  index        Int         @id @default(autoincrement())
+  package      Package     @relation(fields: [packageIndex], references: [index])
   packageIndex Int
   sourceUrl    String
-  version      String       @default("0.0.0")
-  published    Boolean      @default(false)
-  publishedAt  DateTime     @default(now())
-  dependencies Dependency[]
+  version      String      @default("0.0.0")
+  published    Boolean     @default(false)
+  publishedAt  DateTime    @default(now())
   parameters   Parameter[]
-}
 
-model Dependency {
-  index               Int            @id @default(autoincrement())
-  identifier          String
-  version             String
-  packageVersion      PackageVersion @relation(fields: [packageVersionIndex], references: [index])
-  packageVersionIndex Int
+  dependencies PackageVersion[] @relation("Dependencies", references: [index])
+  requiredBy   PackageVersion[] @relation("Dependencies", references: [index])
 }
 
 model Parameter {
