@@ -25,6 +25,7 @@ model Package {
   readme         String           @default("")
   identifier     String
   url            String
+  docUrl         String           @default("")
   type           String           @default("ane")
   published      Boolean          @default(false)
   publishedAt    DateTime         @default(now())
@@ -39,6 +40,7 @@ model PackageVersion {
   package      Package     @relation(fields: [packageIndex], references: [index])
   packageIndex Int
   sourceUrl    String
+  checksum     String      @default("")
   version      String      @default("0.0.0")
   published    Boolean     @default(false)
   publishedAt  DateTime    @default(now())
