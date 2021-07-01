@@ -15,6 +15,7 @@ model Publisher {
   name        String
   description String    @default("")
   url         String
+  token       String    @default("")
   packages    Package[]
 }
 
@@ -23,7 +24,7 @@ model Package {
   name           String
   description    String           @default("")
   readme         String           @default("")
-  identifier     String
+  identifier     String           @unique
   url            String
   docUrl         String           @default("")
   type           String           @default("ane")
@@ -46,20 +47,25 @@ model PackageVersion {
   publishedAt  DateTime    @default(now())
   parameters   Parameter[]
 
+
   dependencies PackageVersion[] @relation("Dependencies", references: [index])
   requiredBy   PackageVersion[] @relation("Dependencies", references: [index])
+
+  @@unique(fields: [version, packageIndex], name: "packageVersionId")
 }
 
 model Parameter {
-  index               Int            @id @default(autoincrement())
-  name                String
-  required            Boolean        @default(false)
-  packageVersion      PackageVersion @relation(fields: [packageVersionIndex], references: [index])
-  packageVersionIndex Int
+  index    Int     @id @default(autoincrement())
+  name     String
+  required Boolean @default(false)
+
+  packageVersions PackageVersion[]
+
+  @@unique(fields: [name, required], name: "nameRequired")
 }
 
 model Tag {
   index    Int       @id @default(autoincrement())
-  name     String
+  name     String    @unique
   packages Package[]
 }
