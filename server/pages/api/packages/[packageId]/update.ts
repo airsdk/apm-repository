@@ -12,6 +12,7 @@ export default async (req: NextApiRequest, res: NextApiResponse) => {
   const packageId = req.query.packageId;
 
   // Some level of auth using a token
+  // TODO improve this 
   const publisher = await prisma.publisher.findFirst({
     where: {
       token: String(token),
