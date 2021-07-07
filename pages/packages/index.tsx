@@ -13,7 +13,7 @@ import {findMany } from '../../lib/queries'
 const PackagesPage = () => {
   const router = useRouter();
   const { q } = router.query;
-  console.log(q);
+  // console.log(q);
 
   const { packages, isLoading, isError } = findMany(String(q));
 

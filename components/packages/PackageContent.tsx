@@ -18,7 +18,7 @@ export default function PackageContent({
     if (isLoading) return <Spinner />;
     if (isError || packageData == undefined) return <ErrorMessage />;
 
-    console.log( JSON.stringify(packageData));
+    // console.log( JSON.stringify(packageData));
 
     return (
         <div className={styles.container} >

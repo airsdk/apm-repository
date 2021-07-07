@@ -16,7 +16,9 @@ export default async (req: NextApiRequest, res: NextApiResponse) => {
       }
     }
   });
-  var tagPackageIndexes = tags.flatMap( t => t.packages.flatMap( p => p.index ) );
+
+  console.log( tags );
+  const tagPackageIndexes = tags.flatMap( t => t.packages.flatMap( p => p.index ) );
 
   const packages = await prisma.package.findMany({
     where: {
