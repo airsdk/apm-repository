@@ -1,6 +1,26 @@
-This is a [Next.js](https://nextjs.org/) project bootstrapped with [`create-next-app`](https://github.com/vercel/next.js/tree/canary/packages/create-next-app).
+
+<p align="center">
+    <a href="https://repository.airsdk.dev" rel="noopener" target="_blank">
+        <img width="150" 
+            src="https://raw.githubusercontent.com/airsdk/airsdk.dev/main/static/images/air-logo.png" 
+            alt="AIR SDK logo">
+    </a>
+</p>
+
+<h1 align="center">repository.airsdk.dev</h1>
+
+<div align="center">
+    Source for the repository.airsdk.dev site. Repository server backend for hosting packages for the `apm` client.
+</div>
+
+
+
+---
+
 
 ## Getting Started
+
+TODO:: this is just template information
 
 First, run the development server:
 
