@@ -55,9 +55,10 @@ model PackageVersion {
 }
 
 model Parameter {
-  index    Int     @id @default(autoincrement())
-  name     String
-  required Boolean @default(false)
+  index        Int     @id @default(autoincrement())
+  name         String
+  required     Boolean @default(false)
+  defaultValue String  @default("")
 
   packageVersions PackageVersion[]
 

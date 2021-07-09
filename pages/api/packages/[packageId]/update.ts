@@ -92,11 +92,11 @@ export default async (req: NextApiRequest, res: NextApiResponse) => {
           },
           parameters: {
             connectOrCreate: packageReq.parameters.map(
-              (m: { name: string; required: boolean }) => {
+              (m: { name: string; required: boolean; defaultValue: string }) => {
                 return {
-                  create: { name: m.name, required: m.required },
+                  create: { name: m.name, required: m.required, defaultValue: m.defaultValue },
                   where: {
-                    nameRequired: { name: m.name, required: m.required },
+                    nameRequired: { name: m.name, required: m.required, defaultValue: m.defaultValue },
                   },
                 };
               }
@@ -114,11 +114,11 @@ export default async (req: NextApiRequest, res: NextApiResponse) => {
           },
           parameters: {
             connectOrCreate: packageReq.parameters.map(
-              (m: { name: String; required: Boolean }) => {
+              (m: { name: string; required: boolean; defaultValue: string }) => {
                 return {
-                  create: { name: m.name, required: m.required },
+                  create: { name: m.name, required: m.required, defaultValue: m.defaultValue },
                   where: {
-                    nameRequired: { name: m.name, required: m.required },
+                    nameRequired: { name: m.name, required: m.required, defaultValue: m.defaultValue },
                   },
                 };
               }
@@ -180,11 +180,11 @@ export default async (req: NextApiRequest, res: NextApiResponse) => {
                 },
                 parameters: {
                   connectOrCreate: packageReq.parameters.map(
-                    (m: { name: String; required: Boolean }) => {
+                    (m: { name: string; required: boolean; defaultValue: string }) => {
                       return {
-                        create: { name: m.name, required: m.required },
+                        create: { name: m.name, required: m.required, defaultValue: m.defaultValue },
                         where: {
-                          nameRequired: { name: m.name, required: m.required },
+                          nameRequired: { name: m.name, required: m.required, defaultValue: m.defaultValue },
                         },
                       };
                     }
