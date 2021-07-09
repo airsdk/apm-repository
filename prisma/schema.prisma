@@ -62,7 +62,7 @@ model Parameter {
 
   packageVersions PackageVersion[]
 
-  @@unique(fields: [name, required], name: "nameRequired")
+  @@unique(fields: [name, required, defaultValue], name: "nameRequiredDefault")
 }
 
 model Tag {

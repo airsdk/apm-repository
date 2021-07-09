@@ -96,7 +96,7 @@ export default async (req: NextApiRequest, res: NextApiResponse) => {
                 return {
                   create: { name: m.name, required: m.required, defaultValue: m.defaultValue },
                   where: {
-                    nameRequired: { name: m.name, required: m.required, defaultValue: m.defaultValue },
+                    nameRequiredDefault: { name: m.name, required: m.required, defaultValue: m.defaultValue },
                   },
                 };
               }
@@ -118,7 +118,7 @@ export default async (req: NextApiRequest, res: NextApiResponse) => {
                 return {
                   create: { name: m.name, required: m.required, defaultValue: m.defaultValue },
                   where: {
-                    nameRequired: { name: m.name, required: m.required, defaultValue: m.defaultValue },
+                    nameRequiredDefault: { name: m.name, required: m.required, defaultValue: m.defaultValue },
                   },
                 };
               }
@@ -184,7 +184,7 @@ export default async (req: NextApiRequest, res: NextApiResponse) => {
                       return {
                         create: { name: m.name, required: m.required, defaultValue: m.defaultValue },
                         where: {
-                          nameRequired: { name: m.name, required: m.required, defaultValue: m.defaultValue },
+                          nameRequiredDefault: { name: m.name, required: m.required, defaultValue: m.defaultValue },
                         },
                       };
                     }
