@@ -9,7 +9,7 @@ export default function SearchBar({
 }) {
   return (
     <div className={styles.search}>
-      <form action="packages" className={styles.searchForm}>
+      <form action="/packages" className={styles.searchForm}>
         {home ? (
           <>
             <input

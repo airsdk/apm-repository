@@ -1,6 +1,6 @@
 import type { NextApiRequest, NextApiResponse } from "next";
 import prisma from "../../../../lib/prisma";
-import type { Package } from 'types/package'
+import type { Package } from '@prisma/client'
 import { version } from "process";
 
 export default async (req: NextApiRequest, res: NextApiResponse) => {
@@ -14,7 +14,24 @@ export default async (req: NextApiRequest, res: NextApiResponse) => {
     include: { 
       publisher: { select: { name: true, url: true } }, 
       tags: true,
-      versions: true
+      versions: {
+        include: {
+          dependencies: 
+          {
+            include: 
+            {
+              package: true
+            }
+          },
+          parameters: true,
+        },
+        where: {
+          published: true,
+        },
+        orderBy: {
+          publishedAt: 'desc',
+        }
+      }
     },
   });
 

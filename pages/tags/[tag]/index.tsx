@@ -1,0 +1,39 @@
+import Head from "next/head";
+import { useRouter } from "next/router";
+
+import Layout, { siteTitle } from "components/layout/Layout";
+import NavBar from "components/layout/NavBar";
+import SearchBar from "components/search/SearchBar";
+import SearchResults from "components/packages/SearchResults";
+
+import styles from "./index.module.css";
+
+import {findMany } from 'lib/queries'
+
+const PackagesPage = () => {
+  const router = useRouter();
+  const { tag } = router.query;
+
+  const { packages, isLoading, isError } = findMany( undefined, String(tag) );
+
+  return (
+    <Layout home>
+      <Head>
+        <title>{siteTitle}</title>
+      </Head>
+
+      <NavBar></NavBar>
+
+      <section className={styles.banner}>
+        <SearchBar></SearchBar>
+      </section>
+
+      <section className="contentContainer">
+        <SearchResults query={String(tag)} packages={packages} isLoading={isLoading} isError={isError} />
+      </section>
+      
+    </Layout>
+  );
+};
+
+export default PackagesPage;

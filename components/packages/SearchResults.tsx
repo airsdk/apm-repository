@@ -2,7 +2,7 @@ import styles from "./SearchResults.module.css";
 import SearchResult from "./SearchResult";
 import Spinner from '../common/Spinner'
 import ErrorMessage from '../common/ErrorMessage'
-import type { Package } from 'types/package'
+import type { Package } from 'types/model'
 
 export default function SearchResults({
   query,
@@ -22,7 +22,7 @@ export default function SearchResults({
     <div className={styles.resultsContainer}>
       <section className={styles.resultsSummary}>
         <strong>
-          Found <code>{packages.length}</code> packages for search query{" "}
+          Found <code>{packages.length}</code> packages for {" "}
           <code>{query}</code>
         </strong>
       </section>

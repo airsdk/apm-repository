@@ -1,6 +1,7 @@
 .search {
-  padding: 2rem 0;
+  padding: 1.5rem 0;
   width: 100%;
+  flex: flex-grow;
 }
 
 .search *:focus {
@@ -23,10 +24,10 @@
   background: #2d303b;
   color: #fff;
   font-size: 16px;
-  padding: 15px 25px 15px 55px;
+  padding: 10px 25px 10px 55px;
   flex-grow: 1;
   border: none;
-  border-radius: 35px;
+  border-radius: 20px;
   width: 100%;
 }
 

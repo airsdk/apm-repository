@@ -6,7 +6,7 @@ export default async (req: NextApiRequest, res: NextApiResponse) => {
 
   const tags = await prisma.tag.findMany({
     where: {
-      name: {contains: String(q) }
+      name: {contains: String(t) }
     },
     select: {
       packages: {
@@ -17,7 +17,6 @@ export default async (req: NextApiRequest, res: NextApiResponse) => {
     }
   });
 
-  console.log( tags );
   const tagPackageIndexes = tags.flatMap( t => t.packages.flatMap( p => p.index ) );
 
   const packages = await prisma.package.findMany({
@@ -29,11 +28,9 @@ export default async (req: NextApiRequest, res: NextApiResponse) => {
         { description: { contains: String(q) } },
         { readme: { contains: String(q) } },
         { index: { in: tagPackageIndexes } },
-        // { tags: { 
-        //   where: { 
-        //     name: { contains: String(q) } 
-        //   }
-        // }}
+        { tags: {
+          some: { name: String(q) } 
+        }}
       ],
     },
     include: { 

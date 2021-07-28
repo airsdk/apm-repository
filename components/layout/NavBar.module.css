@@ -3,7 +3,8 @@
     padding: 15px;
     height: 60px;
     vertical-align: middle;
-
+    display: flex;
+    flex-direction: row;
 }
 
 .navbarLogo {

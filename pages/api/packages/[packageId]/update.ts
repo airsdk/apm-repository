@@ -1,6 +1,6 @@
 import type { NextApiRequest, NextApiResponse } from "next";
 import prisma from "../../../../lib/prisma";
-import type { Package } from "types/package";
+import type { Package } from "@prisma/client";
 import { version } from "process";
 import { Prisma } from "@prisma/client";
 
@@ -9,6 +9,9 @@ export default async (req: NextApiRequest, res: NextApiResponse) => {
   const token = authHeader?.substr("token ".length);
 
   const packageReq = req.body.packageDef;
+  const readme = req.body.readme;
+  const changelog = req.body.changelog;
+
   const packageId = req.query.packageId;
 
   // Some level of auth using a token
@@ -52,7 +55,8 @@ export default async (req: NextApiRequest, res: NextApiResponse) => {
       let packageUpdate: Prisma.PackageUpdateInput = {
         name: packageReq.name,
         description: packageReq.description,
-        readme: "",
+        readme: readme,
+        changelog: changelog,
         url: packageReq.url,
         docUrl: packageReq.docUrl,
         published: true,
@@ -149,7 +153,8 @@ export default async (req: NextApiRequest, res: NextApiResponse) => {
         let packageCreate: Prisma.PackageCreateInput = {
           name: packageReq.name,
           description: packageReq.description,
-          readme: "",
+          readme: readme,
+          changelog: changelog,
           identifier: String(packageId),
           url: packageReq.url,
           docUrl: packageReq.docUrl,

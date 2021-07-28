@@ -23,7 +23,8 @@ model Package {
   index          Int              @id @default(autoincrement())
   name           String
   description    String           @default("")
-  readme         String           @default("")
+  readme         String?          @db.LongText
+  changelog      String?          @db.LongText
   identifier     String           @unique
   url            String
   docUrl         String           @default("")

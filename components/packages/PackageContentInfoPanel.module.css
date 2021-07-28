@@ -1,0 +1,29 @@
+
+.container {
+  min-width: 300px;
+}
+
+
+.infoItem {
+  font-size: small;
+  border-bottom: #ed1c23 1px dashed;
+  position: relative;
+}
+
+
+.copyButton {
+  width: 0.9em;
+  height: 0.9em;
+  right: 11px;
+  position: absolute;
+}
+
+.icon {
+  width: 0.9em;
+  height: 0.9em;
+}
+
+
+.tag a:hover { 
+  color: #999;
+}

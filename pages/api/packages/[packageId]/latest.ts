@@ -1,6 +1,6 @@
 import type { NextApiRequest, NextApiResponse } from "next";
 import prisma from "../../../../lib/prisma";
-import type { Package } from 'types/package'
+import type { Package } from '@prisma/client'
 
 export default async (req: NextApiRequest, res: NextApiResponse) => {
   const packageId = req.query.packageId;
