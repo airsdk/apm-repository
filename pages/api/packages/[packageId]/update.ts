@@ -8,11 +8,13 @@ export default async (req: NextApiRequest, res: NextApiResponse) => {
   const authHeader = req.headers.authorization;
   const token = authHeader?.substr("token ".length);
 
+  // TODO Need to validate data
   const packageReq = req.body.packageDef;
   const readme = req.body.readme;
   const changelog = req.body.changelog;
 
   const packageId = req.query.packageId;
+
 
   // Some level of auth using a token
   // TODO improve this 
