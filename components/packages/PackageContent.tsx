@@ -99,7 +99,7 @@ export default function PackageContent({
               {/* SUMMARY */}
               <span className={styles.version}>v{packageData.versions[0].version}</span>
               &nbsp; - &nbsp;
-              <span>Public</span>
+              <span>{packageData?.license === undefined || packageData?.license.public ? "Public" : "Private"}</span>
               &nbsp; - &nbsp;
               <span className={styles.publishedDate}>Published <Date dateString={packageData.versions[0].publishedAt} /></span>
             </div>

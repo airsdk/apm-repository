@@ -1,3 +1,5 @@
+import { License } from "@prisma/client";
+
 export type Publisher = {
   index: number;
   name: string;
@@ -10,7 +12,6 @@ export type Package = {
   name: string;
   description: string;
   readme: string;
-  changelog: string;
   identifier: string;
   url: string;
   docUrl: string;
@@ -20,11 +21,14 @@ export type Package = {
   publisher: Publisher;
   tags: Array<Tag>;
   versions: Array<PackageVersion>;
+  license: License;
+  purchaseUrl: string;
 };
 
 export type PackageVersion = {
   index: number;
   packageIndex: number;
+  changelog: string;
   package?: Package;
   sourceUrl: string;
   checksum: string;
@@ -46,3 +50,9 @@ export type Tag = {
   index: number;
   name: string;
 };
+
+export type License = {
+  type: string;
+  url: string;
+  public: boolean;
+}

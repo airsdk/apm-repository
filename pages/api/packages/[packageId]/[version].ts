@@ -10,11 +10,9 @@ export default async (req: NextApiRequest, res: NextApiResponse) => {
       published: true,
       identifier: String(packageId),
     },
-    orderBy: {
-      publishedAt: "desc",
-    },
     include: {
       publisher: { select: { name: true, url: true } },
+      license: true,
       tags: true,
       versions: {
         include: {
@@ -29,6 +27,9 @@ export default async (req: NextApiRequest, res: NextApiResponse) => {
         },
         where: {
           version: String(version),
+        },
+        orderBy: {
+          publishedAt: "desc",
         },
       },
     },

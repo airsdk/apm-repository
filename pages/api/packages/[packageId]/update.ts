@@ -56,9 +56,20 @@ export default async (req: NextApiRequest, res: NextApiResponse) => {
         name: packageReq.name,
         description: packageReq.description,
         readme: readme,
-        changelog: changelog,
         url: packageReq.url,
         docUrl: packageReq.docUrl,
+        purchaseUrl: packageReq.purchaseUrl,
+        license: { connectOrCreate: {
+          create: { 
+            type: packageReq.license !== undefined ? packageReq.license.type : 'none', 
+            public: packageReq.license !== undefined ? packageReq.license.public : false, 
+            url: packageReq.license !== undefined ? packageReq.license.url : '' 
+          },
+          where: { typeUrl: { 
+                  type: packageReq.license !== undefined ? packageReq.license.type : 'none', 
+                  url: packageReq.license !== undefined ? packageReq.license.url : '' 
+          }},
+        }},
         published: true,
         tags: {
           connectOrCreate: packageReq.tags.map((m: String) => {
@@ -91,6 +102,8 @@ export default async (req: NextApiRequest, res: NextApiResponse) => {
           checksum: packageReq.checksum,
           version: packageReq.version,
           published: true,
+          publishedAt: packageReq.publishedAt,
+          changelog: changelog,
           dependencies: {
             connect: dependencies,
           },
@@ -112,7 +125,9 @@ export default async (req: NextApiRequest, res: NextApiResponse) => {
           sourceUrl: packageReq.sourceUrl,
           checksum: packageReq.checksum,
           version: packageReq.version,
+          changelog: changelog,
           published: true,
+          publishedAt: packageReq.publishedAt,
           dependencies: {
             connect: dependencies,
           },
@@ -154,10 +169,21 @@ export default async (req: NextApiRequest, res: NextApiResponse) => {
           name: packageReq.name,
           description: packageReq.description,
           readme: readme,
-          changelog: changelog,
           identifier: String(packageId),
           url: packageReq.url,
           docUrl: packageReq.docUrl,
+          purchaseUrl: packageReq.purchaseUrl,
+          license: { connectOrCreate: {
+            create: { 
+              type: packageReq.license !== undefined ? packageReq.license.type : 'none', 
+              public: packageReq.license !== undefined ? packageReq.license.public : false, 
+              url: packageReq.license !== undefined ? packageReq.license.url : '' 
+            },
+            where: { typeUrl: { 
+                    type: packageReq.license !== undefined ? packageReq.license.type : 'none', 
+                    url: packageReq.license !== undefined ? packageReq.license.url : '' 
+            }},
+          }},
           type: packageReq.type,
           published: true,
           publisher: {
@@ -179,7 +205,9 @@ export default async (req: NextApiRequest, res: NextApiResponse) => {
                 sourceUrl: packageReq.sourceUrl,
                 checksum: packageReq.checksum,
                 version: packageReq.version,
+                changelog: changelog,
                 published: true,
+                publishedAt: packageReq.publishedAt,
                 dependencies: {
                   connect: dependencies,
                 },

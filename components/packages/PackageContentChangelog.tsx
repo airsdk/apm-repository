@@ -18,7 +18,7 @@ export default function PackageContentChangelog({
 }: {
   packageData: Package | undefined;
 }) {
-  if (packageData === undefined || packageData?.changelog == null || packageData?.changelog.length === 0) {
+  if (packageData === undefined || packageData?.versions[0].changelog == null || packageData?.versions[0].changelog.length === 0) {
     return (
       <div className={styles.container}>
         <NoChangelog />
@@ -29,7 +29,7 @@ export default function PackageContentChangelog({
   const content = unified()
     .use(parse)
     .use(remark2react)
-    .processSync(packageData?.changelog).result as ReactElement;
+    .processSync(packageData?.versions[0].changelog).result as ReactElement;
 
   return <div className={styles.changelog}>{content}</div>;
 }

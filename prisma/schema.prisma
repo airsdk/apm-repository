@@ -24,7 +24,6 @@ model Package {
   name           String
   description    String           @default("")
   readme         String?          @db.LongText
-  changelog      String?          @db.LongText
   identifier     String           @unique
   url            String
   docUrl         String           @default("")
@@ -33,6 +32,9 @@ model Package {
   publishedAt    DateTime         @default(now())
   publisher      Publisher        @relation(fields: [publisherIndex], references: [index])
   publisherIndex Int
+  license        License?         @relation(fields: [licenseIndex], references: [index])
+  licenseIndex   Int?
+  purchaseUrl    String           @default("")
   tags           Tag[]
   versions       PackageVersion[]
 }
@@ -42,6 +44,7 @@ model PackageVersion {
   package      Package     @relation(fields: [packageIndex], references: [index])
   packageIndex Int
   sourceUrl    String
+  changelog    String?     @db.LongText
   checksum     String      @default("")
   version      String      @default("0.0.0")
   published    Boolean     @default(false)
@@ -70,4 +73,14 @@ model Tag {
   index    Int       @id @default(autoincrement())
   name     String    @unique
   packages Package[]
+}
+
+model License {
+  index    Int       @id @default(autoincrement())
+  type     String    @default("")
+  url      String    @default("")
+  public   Boolean   @default(true)
+  packages Package[]
+
+  @@unique(fields: [type, url], name: "typeUrl")
 }
