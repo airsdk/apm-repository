@@ -1,4 +1,3 @@
-import { License } from "@prisma/client";
 
 export type Publisher = {
   index: number;

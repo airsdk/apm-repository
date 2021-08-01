@@ -2,6 +2,22 @@ import { Package } from "types/model";
 
 import styles from "./PackageContentInfoPanel.module.css";
 
+
+function hasLicense(packageData:Package|undefined){
+  if (packageData?.license === undefined || packageData?.license == null)
+    return false;
+  if (packageData.license.type !== 'none')
+    return false;
+  return true;
+}
+
+function hasPublicLicense(packageData: Package | undefined) {
+  if (hasLicense(packageData)) {
+    return packageData?.license.public;
+  }
+  return true;
+}
+
 export default function PackageContentInfoPanel({
   packageData,
   children,
@@ -11,13 +27,13 @@ export default function PackageContentInfoPanel({
 }) {
 
   let license = <div></div>
-  if (packageData?.license !== undefined && packageData.license.type !== 'none')
+  if (packageData?.license !== undefined && hasLicense(packageData))
   {
     license = (
       <div className={styles.infoItem}>
         <h3>License</h3>
         <p>
-          <span>{packageData?.license.public ? "Public" : "Private"}</span>
+          <span>{hasPublicLicense(packageData) ? "Public" : "Private"}</span>
           &nbsp;-&nbsp;
           <a href={packageData?.license.url}>{packageData?.license.type}</a>
           {!packageData?.license.public && packageData?.purchaseUrl.length > 0 && (

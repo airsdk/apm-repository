@@ -25,7 +25,7 @@ export default function SearchResult({ packageData }: { packageData: Package }) 
         <small>type: {packageData.type}</small>
         <p>{packageData.description}</p>
         <div className={styles.metadata}>
-            <span className={styles.version}>v{packageData.versions[0].version}</span>  • Published: <Date date={packageData.versions[0].publishedAt} />
+            <span className={styles.version}>v{packageData.versions[0].version}</span> • Published: <Date dateString={packageData.versions[0].publishedAt} />
         </div>
 
         <div className={styles.link}>
