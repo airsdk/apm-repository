@@ -7,8 +7,8 @@ function hasLicense(packageData:Package|undefined){
   if (packageData?.license === undefined || packageData?.license == null)
     return false;
   if (packageData.license.type !== 'none')
-    return false;
-  return true;
+    return true;
+  return false;
 }
 
 function hasPublicLicense(packageData: Package | undefined) {
