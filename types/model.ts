@@ -21,7 +21,7 @@ export type Package = {
   versions: Array<PackageVersion>;
   license: License;
   purchaseUrl: string;
-  analytics: Analytics;
+  analytics?: Analytics;
 };
 
 export type PackageVersion = {
@@ -36,7 +36,7 @@ export type PackageVersion = {
   publishedAt: string;
   dependencies: Array<PackageVersion>;
   parameters: Array<Parameter>;
-  analytics: Analytics;
+  analytics?: Analytics;
 };
 
 export type Parameter = {
