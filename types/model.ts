@@ -1,4 +1,3 @@
-
 export type Publisher = {
   index: number;
   name: string;
@@ -22,6 +21,7 @@ export type Package = {
   versions: Array<PackageVersion>;
   license: License;
   purchaseUrl: string;
+  analytics: Analytics;
 };
 
 export type PackageVersion = {
@@ -36,6 +36,7 @@ export type PackageVersion = {
   publishedAt: string;
   dependencies: Array<PackageVersion>;
   parameters: Array<Parameter>;
+  analytics: Analytics;
 };
 
 export type Parameter = {
@@ -55,3 +56,10 @@ export type License = {
   url: string;
   public: boolean;
 }
+
+export type Analytics = {
+  installs: number;
+  downloads: number;
+  uninstalls: number;
+}
+

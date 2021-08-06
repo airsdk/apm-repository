@@ -1,5 +1,5 @@
 import type { NextApiRequest, NextApiResponse } from "next";
-import prisma from "../../../../lib/prisma";
+import prisma from "../../../../../lib/prisma";
 
 export default async (req: NextApiRequest, res: NextApiResponse) => {
   const packageId = req.query.packageId;
@@ -13,9 +13,11 @@ export default async (req: NextApiRequest, res: NextApiResponse) => {
     include: {
       publisher: { select: { name: true, url: true } },
       license: true,
+      analytics: true,
       tags: true,
       versions: {
         include: {
+          analytics: true,
           dependencies: 
           {
             include: 

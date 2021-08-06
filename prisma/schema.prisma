@@ -37,6 +37,9 @@ model Package {
   purchaseUrl    String           @default("")
   tags           Tag[]
   versions       PackageVersion[]
+
+  analytics      Analytics? @relation(fields: [analyticsIndex], references: [index])
+  analyticsIndex Int?
 }
 
 model PackageVersion {
@@ -51,9 +54,11 @@ model PackageVersion {
   publishedAt  DateTime    @default(now())
   parameters   Parameter[]
 
-
   dependencies PackageVersion[] @relation("Dependencies", references: [index])
   requiredBy   PackageVersion[] @relation("Dependencies", references: [index])
+
+  analytics      Analytics? @relation(fields: [analyticsIndex], references: [index])
+  analyticsIndex Int?
 
   @@unique(fields: [version, packageIndex], name: "packageVersionId")
 }
@@ -83,4 +88,13 @@ model License {
   packages Package[]
 
   @@unique(fields: [type, url], name: "typeUrl")
+}
+
+model Analytics {
+  index          Int              @id @default(autoincrement())
+  downloads      Int              @default(0)
+  installs       Int              @default(0)
+  uninstalls     Int              @default(0)
+  Package        Package[]
+  PackageVersion PackageVersion[]
 }
