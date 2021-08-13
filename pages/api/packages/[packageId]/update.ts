@@ -89,6 +89,18 @@ export default async (req: NextApiRequest, res: NextApiResponse) => {
         data: packageUpdate,
       });
 
+      // Validate published date
+      var publishedAt = new Date().toISOString();
+      if (packageReq.publishedAt.length > 0)
+      {
+        try 
+        {
+          publishedAt = new Date( packageReq.publishedAt ).toISOString();
+        }
+        catch (e)
+        {
+        }
+      }
       
 
       // Update or create package version
@@ -104,7 +116,7 @@ export default async (req: NextApiRequest, res: NextApiResponse) => {
           checksum: packageReq.checksum,
           version: packageReq.version,
           published: true,
-          publishedAt: packageReq.publishedAt,
+          publishedAt: publishedAt,
           changelog: changelog,
           dependencies: {
             connect: dependencies,
@@ -129,7 +141,7 @@ export default async (req: NextApiRequest, res: NextApiResponse) => {
           version: packageReq.version,
           changelog: changelog,
           published: true,
-          publishedAt: packageReq.publishedAt,
+          publishedAt: publishedAt,
           dependencies: {
             connect: dependencies,
           },
@@ -209,7 +221,7 @@ export default async (req: NextApiRequest, res: NextApiResponse) => {
                 version: packageReq.version,
                 changelog: changelog,
                 published: true,
-                publishedAt: packageReq.publishedAt,
+                publishedAt: publishedAt,
                 dependencies: {
                   connect: dependencies,
                 },
