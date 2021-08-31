@@ -15,9 +15,8 @@ export default async (req: NextApiRequest, res: NextApiResponse) => {
 
   const packageId = req.query.packageId;
 
-
   // Some level of auth using a token
-  // TODO improve this 
+  // TODO improve this
   const publisher = await prisma.publisher.findFirst({
     where: {
       token: String(token),
@@ -32,25 +31,32 @@ export default async (req: NextApiRequest, res: NextApiResponse) => {
   });
 
   if (publisher) {
-
-    // Determine dependencies 
-    // TODO improve this ? 
+    // Determine dependencies
+    // TODO improve this ?
     let dependencies: Prisma.Enumerable<Prisma.PackageVersionWhereUniqueInput> =
-    await Promise.all(
-      packageReq.dependencies.map(
-        async (d: { id: string; version: string }) => {
-          const p = await prisma.package.findFirst({
-            where: { identifier: d.id },
-          });
-          return {
-            packageVersionId: {
-              version: d.version,
-              packageIndex: p?.index,
-            },
-          };
-        }
-      )
-    );
+      await Promise.all(
+        packageReq.dependencies.map(
+          async (d: { id: string; version: string }) => {
+            const p = await prisma.package.findFirst({
+              where: { identifier: d.id },
+            });
+            return {
+              packageVersionId: {
+                version: d.version,
+                packageIndex: p?.index,
+              },
+            };
+          }
+        )
+      );
+
+    // Validate published date
+    var publishedAt = new Date().toISOString();
+    if (packageReq.publishedAt.length > 0) {
+      try {
+        publishedAt = new Date(packageReq.publishedAt).toISOString();
+      } catch (e) {}
+    }
 
     if (publisher.packages.length > 0) {
       // Update package information
@@ -61,17 +67,34 @@ export default async (req: NextApiRequest, res: NextApiResponse) => {
         url: packageReq.url,
         docUrl: packageReq.docUrl,
         purchaseUrl: packageReq.purchaseUrl,
-        license: { connectOrCreate: {
-          create: { 
-            type: packageReq.license !== undefined ? packageReq.license.type : 'none', 
-            public: packageReq.license !== undefined ? packageReq.license.public : false, 
-            url: packageReq.license !== undefined ? packageReq.license.url : '' 
+        license: {
+          connectOrCreate: {
+            create: {
+              type:
+                packageReq.license !== undefined
+                  ? packageReq.license.type
+                  : "none",
+              public:
+                packageReq.license !== undefined
+                  ? packageReq.license.public
+                  : false,
+              url:
+                packageReq.license !== undefined ? packageReq.license.url : "",
+            },
+            where: {
+              typeUrl: {
+                type:
+                  packageReq.license !== undefined
+                    ? packageReq.license.type
+                    : "none",
+                url:
+                  packageReq.license !== undefined
+                    ? packageReq.license.url
+                    : "",
+              },
+            },
           },
-          where: { typeUrl: { 
-                  type: packageReq.license !== undefined ? packageReq.license.type : 'none', 
-                  url: packageReq.license !== undefined ? packageReq.license.url : '' 
-          }},
-        }},
+        },
         published: true,
         tags: {
           connectOrCreate: packageReq.tags.map((m: String) => {
@@ -88,20 +111,6 @@ export default async (req: NextApiRequest, res: NextApiResponse) => {
         },
         data: packageUpdate,
       });
-
-      // Validate published date
-      var publishedAt = new Date().toISOString();
-      if (packageReq.publishedAt.length > 0)
-      {
-        try 
-        {
-          publishedAt = new Date( packageReq.publishedAt ).toISOString();
-        }
-        catch (e)
-        {
-        }
-      }
-      
 
       // Update or create package version
       const packageVersionUpdateResult = await prisma.packageVersion.upsert({
@@ -123,11 +132,23 @@ export default async (req: NextApiRequest, res: NextApiResponse) => {
           },
           parameters: {
             connectOrCreate: packageReq.parameters.map(
-              (m: { name: string; required: boolean; defaultValue: string }) => {
+              (m: {
+                name: string;
+                required: boolean;
+                defaultValue: string;
+              }) => {
                 return {
-                  create: { name: m.name, required: m.required, defaultValue: m.defaultValue },
+                  create: {
+                    name: m.name,
+                    required: m.required,
+                    defaultValue: m.defaultValue,
+                  },
                   where: {
-                    nameRequiredDefault: { name: m.name, required: m.required, defaultValue: m.defaultValue },
+                    nameRequiredDefault: {
+                      name: m.name,
+                      required: m.required,
+                      defaultValue: m.defaultValue,
+                    },
                   },
                 };
               }
@@ -147,11 +168,23 @@ export default async (req: NextApiRequest, res: NextApiResponse) => {
           },
           parameters: {
             connectOrCreate: packageReq.parameters.map(
-              (m: { name: string; required: boolean; defaultValue: string }) => {
+              (m: {
+                name: string;
+                required: boolean;
+                defaultValue: string;
+              }) => {
                 return {
-                  create: { name: m.name, required: m.required, defaultValue: m.defaultValue },
+                  create: {
+                    name: m.name,
+                    required: m.required,
+                    defaultValue: m.defaultValue,
+                  },
                   where: {
-                    nameRequiredDefault: { name: m.name, required: m.required, defaultValue: m.defaultValue },
+                    nameRequiredDefault: {
+                      name: m.name,
+                      required: m.required,
+                      defaultValue: m.defaultValue,
+                    },
                   },
                 };
               }
@@ -187,17 +220,36 @@ export default async (req: NextApiRequest, res: NextApiResponse) => {
           url: packageReq.url,
           docUrl: packageReq.docUrl,
           purchaseUrl: packageReq.purchaseUrl,
-          license: { connectOrCreate: {
-            create: { 
-              type: packageReq.license !== undefined ? packageReq.license.type : 'none', 
-              public: packageReq.license !== undefined ? packageReq.license.public : false, 
-              url: packageReq.license !== undefined ? packageReq.license.url : '' 
+          license: {
+            connectOrCreate: {
+              create: {
+                type:
+                  packageReq.license !== undefined
+                    ? packageReq.license.type
+                    : "none",
+                public:
+                  packageReq.license !== undefined
+                    ? packageReq.license.public
+                    : false,
+                url:
+                  packageReq.license !== undefined
+                    ? packageReq.license.url
+                    : "",
+              },
+              where: {
+                typeUrl: {
+                  type:
+                    packageReq.license !== undefined
+                      ? packageReq.license.type
+                      : "none",
+                  url:
+                    packageReq.license !== undefined
+                      ? packageReq.license.url
+                      : "",
+                },
+              },
             },
-            where: { typeUrl: { 
-                    type: packageReq.license !== undefined ? packageReq.license.type : 'none', 
-                    url: packageReq.license !== undefined ? packageReq.license.url : '' 
-            }},
-          }},
+          },
           type: packageReq.type,
           published: true,
           publisher: {
@@ -227,11 +279,23 @@ export default async (req: NextApiRequest, res: NextApiResponse) => {
                 },
                 parameters: {
                   connectOrCreate: packageReq.parameters.map(
-                    (m: { name: string; required: boolean; defaultValue: string }) => {
+                    (m: {
+                      name: string;
+                      required: boolean;
+                      defaultValue: string;
+                    }) => {
                       return {
-                        create: { name: m.name, required: m.required, defaultValue: m.defaultValue },
+                        create: {
+                          name: m.name,
+                          required: m.required,
+                          defaultValue: m.defaultValue,
+                        },
                         where: {
-                          nameRequiredDefault: { name: m.name, required: m.required, defaultValue: m.defaultValue },
+                          nameRequiredDefault: {
+                            name: m.name,
+                            required: m.required,
+                            defaultValue: m.defaultValue,
+                          },
                         },
                       };
                     }
