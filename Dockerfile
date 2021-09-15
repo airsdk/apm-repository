@@ -12,4 +12,4 @@ COPY typings-custom/ ./typings-custom
 COPY lib/ ./lib
 COPY styles/ ./styles
 COPY types/ ./types
-CMD npm run dev
+CMD npm run bootstrap && npm run dev
