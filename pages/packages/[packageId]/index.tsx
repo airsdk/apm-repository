@@ -8,18 +8,20 @@ import SearchBar from "components/search/SearchBar";
 
 import styles from "../index.module.css";
 
-import {findLatest} from '../../../lib/queries'
+import { findLatest } from "../../../lib/queries";
 
 const PackagePage = () => {
   const router = useRouter();
   const { packageId } = router.query;
 
   const { data, isLoading, isError } = findLatest(String(packageId));
-  
+
   return (
     <Layout home>
       <Head>
-        <title>{siteTitle}: {packageId}</title>
+        <title>
+          {siteTitle}: {packageId}
+        </title>
       </Head>
 
       <NavBar></NavBar>
@@ -29,9 +31,12 @@ const PackagePage = () => {
       </section>
 
       <section className="contentContainer">
-        <PackageContent packageData={data} isLoading={isLoading} isError={isError}></PackageContent>
+        <PackageContent
+          packageData={data}
+          isLoading={isLoading}
+          isError={isError}
+        ></PackageContent>
       </section>
-
     </Layout>
   );
 };

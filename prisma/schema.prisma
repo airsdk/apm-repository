@@ -51,6 +51,7 @@ model PackageVersion {
   checksum     String      @default("")
   version      String      @default("0.0.0")
   published    Boolean     @default(false)
+  status       String      @default("")
   publishedAt  DateTime    @default(now())
   parameters   Parameter[]
 

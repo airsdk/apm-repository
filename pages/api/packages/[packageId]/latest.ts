@@ -3,6 +3,12 @@ import prisma from "../../../../lib/prisma";
 
 export default async (req: NextApiRequest, res: NextApiResponse) => {
   const packageId = req.query.packageId;
+  const includePrerelease =
+    req.query.includePrerelease === undefined
+      ? false
+      : req.query.includePrerelease;
+  var excludedStatusValues = ["discontinued"];
+  if (!includePrerelease) excludedStatusValues.push("prerelease");
 
   const packageData = await prisma.package.findFirst({
     where: {
@@ -17,33 +23,28 @@ export default async (req: NextApiRequest, res: NextApiResponse) => {
       versions: {
         include: {
           analytics: true,
-          dependencies: 
-          {
-            include: 
-            {
-              package: true
-            }
+          dependencies: {
+            include: {
+              package: true,
+            },
           },
           parameters: true,
         },
         where: {
           published: true,
+          status: { notIn: excludedStatusValues },
         },
         orderBy: {
-          publishedAt: 'desc',
+          publishedAt: "desc",
         },
-        take: 1
+        take: 1,
       },
     },
   });
 
-  if (packageData)
-  {
+  if (packageData) {
     res.status(200).json(packageData);
+  } else {
+    res.status(404).json({});
   }
-  else 
-  {
-    res.status(404).json({})
-  }
-
 };

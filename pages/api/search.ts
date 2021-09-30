@@ -4,20 +4,29 @@ import prisma from "../../lib/prisma";
 export default async (req: NextApiRequest, res: NextApiResponse) => {
   const { q, t } = req.query;
 
+  const includePrerelease =
+    req.query.includePrerelease === undefined
+      ? false
+      : req.query.includePrerelease;
+  var excludedStatusValues = [];
+  if (!includePrerelease) excludedStatusValues.push("prerelease");
+
   const tags = await prisma.tag.findMany({
     where: {
-      name: {contains: String(t) }
+      name: { contains: String(t) },
     },
     select: {
       packages: {
         select: {
-          index: true
-        }
-      }
-    }
+          index: true,
+        },
+      },
+    },
   });
 
-  const tagPackageIndexes = tags.flatMap( t => t.packages.flatMap( p => p.index ) );
+  const tagPackageIndexes = tags.flatMap((t) =>
+    t.packages.flatMap((p) => p.index)
+  );
 
   const packages = await prisma.package.findMany({
     where: {
@@ -28,22 +37,25 @@ export default async (req: NextApiRequest, res: NextApiResponse) => {
         { description: { contains: String(q) } },
         { readme: { contains: String(q) } },
         { index: { in: tagPackageIndexes } },
-        { tags: {
-          some: { name: String(q) } 
-        }}
+        {
+          tags: {
+            some: { name: String(q) },
+          },
+        },
       ],
     },
-    include: { 
+    include: {
       publisher: { select: { name: true, url: true } },
       tags: true,
       versions: {
         where: {
           published: true,
+          status: { notIn: excludedStatusValues },
         },
         orderBy: {
-          publishedAt: 'desc',
+          publishedAt: "desc",
         },
-        take: 1
+        take: 1,
       },
     },
   });

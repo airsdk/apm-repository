@@ -15,6 +15,7 @@ export type Package = {
   docUrl: string;
   type: string;
   published: boolean;
+  status: string;
   publishedAt: string;
   publisher: Publisher;
   tags: Array<Tag>;
@@ -33,6 +34,7 @@ export type PackageVersion = {
   checksum: string;
   version: string;
   published: boolean;
+  status: string;
   publishedAt: string;
   dependencies: Array<PackageVersion>;
   parameters: Array<Parameter>;
@@ -55,11 +57,10 @@ export type License = {
   type: string;
   url: string;
   public: boolean;
-}
+};
 
 export type Analytics = {
   installs: number;
   downloads: number;
   uninstalls: number;
-}
-
+};

@@ -7,7 +7,7 @@ export default async (req: NextApiRequest, res: NextApiResponse) => {
   const version = req.query.version;
   const event = req.query.event;
 
-  console.log( packageId + "/" + version + "/analytics/" + event )
+  console.log(packageId + "/" + version + "/analytics/" + event);
 
   var updateData: any = {};
   let createData: any = {};

@@ -8,30 +8,38 @@ import SearchBar from "components/search/SearchBar";
 
 import styles from "../index.module.css";
 
-import {findVersion} from '../../../lib/queries'
+import { findVersion } from "../../../lib/queries";
 
 const PackagePage = () => {
   const router = useRouter();
   const { packageId, version } = router.query;
 
-  const { data, isLoading, isError } = findVersion(String(packageId), String(version) );
-  
+  const { data, isLoading, isError } = findVersion(
+    String(packageId),
+    String(version)
+  );
+
   return (
     <Layout home>
       <Head>
-        <title>{siteTitle}: {packageId}</title>
+        <title>
+          {siteTitle}: {packageId}
+        </title>
       </Head>
 
       <NavBar></NavBar>
-      
+
       <section className={styles.banner}>
         <SearchBar></SearchBar>
       </section>
 
       <section className="contentContainer">
-        <PackageContent packageData={data} isLoading={isLoading} isError={isError}></PackageContent>
+        <PackageContent
+          packageData={data}
+          isLoading={isLoading}
+          isError={isError}
+        ></PackageContent>
       </section>
-
     </Layout>
   );
 };

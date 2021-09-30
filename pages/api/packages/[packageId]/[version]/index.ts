@@ -18,12 +18,10 @@ export default async (req: NextApiRequest, res: NextApiResponse) => {
       versions: {
         include: {
           analytics: true,
-          dependencies: 
-          {
-            include: 
-            {
-              package: true
-            }
+          dependencies: {
+            include: {
+              package: true,
+            },
           },
           parameters: true,
         },
