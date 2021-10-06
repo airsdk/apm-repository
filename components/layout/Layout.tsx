@@ -21,8 +21,14 @@ export default function Layout({
         <meta name="twitter:card" content="summary_large_image" />
 
         <link rel="preconnect" href="https://fonts.gstatic.com" />
-        <link href="https://fonts.googleapis.com/css2?family=Roboto+Mono&family=Noto+Sans+JP&family=Open+Sans&family=Roboto&family=Lato&display=swap" rel="stylesheet" />
-        <link href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/4.7.0/css/font-awesome.min.css" rel="stylesheet" />
+        <link
+          href="https://fonts.googleapis.com/css2?family=Roboto+Mono&family=Noto+Sans+JP&family=Open+Sans:ital,wght@0,300;1,300;1,400&family=Roboto&family=Lato&display=swap"
+          rel="stylesheet"
+        />
+        <link
+          href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/4.7.0/css/font-awesome.min.css"
+          rel="stylesheet"
+        />
       </Head>
 
       <header className={styles.header}></header>
@@ -30,22 +36,23 @@ export default function Layout({
       <main>{children}</main>
 
       <footer className={styles.footer}>
+        <a href="/policy" className={styles.footerLink}>
+          Policy
+        </a>{" "}
+        |
         <a
           href="https://airsdk.dev"
+          className={styles.footerLogo}
           target="_blank"
           rel="noopener noreferrer"
         >
-          
           <span className={styles.logo}>
             <img src="/images/logo.svg" alt="AIR SDK" width={32} height={32} />
-          </span>
-          {' '}AIR SDK
+          </span>{" "}
+          AIR SDK
         </a>
       </footer>
-
     </div>
-
-    
   );
   return <div>{children}</div>;
 }

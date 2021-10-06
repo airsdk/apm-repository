@@ -2,8 +2,10 @@ html,
 body {
   padding: 0;
   margin: 0;
-  font-family: 'Roboto', -apple-system, BlinkMacSystemFont, Segoe UI, Oxygen,
-  Ubuntu, Cantarell, Fira Sans, Droid Sans, Helvetica Neue, sans-serif;
+  /* font-family: "Roboto", -apple-system, BlinkMacSystemFont, Segoe UI, Oxygen,
+    Ubuntu, Cantarell, Fira Sans, Droid Sans, Helvetica Neue, sans-serif; */
+  font-family: "Roboto", -apple-system, BlinkMacSystemFont, Segoe UI, Oxygen,
+    Ubuntu, sans-serif;
   line-height: 1.6;
   font-size: 18px;
 }
@@ -17,19 +19,22 @@ a {
   box-sizing: border-box;
 }
 
-h1, h2, h3, h4, h5, h6 {
-  font-family: 'Lato', sans-serif;
+h1,
+h2,
+h3,
+h4,
+h5,
+h6 {
+  font-family: "Lato", sans-serif;
+  font-weight: 100;
   letter-spacing: 0.05rem;
 }
-
 
 button {
   cursor: pointer;
   border: none;
 }
 
-
 .contentContainer {
   padding: 1em;
 }
-
