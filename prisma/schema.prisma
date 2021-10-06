@@ -1,0 +1,101 @@
+// This is your Prisma schema file,
+// learn more about it in the docs: https://pris.ly/d/prisma-schema
+
+datasource db {
+  provider = "mysql"
+  url      = env("DATABASE_URL")
+}
+
+generator client {
+  provider = "prisma-client-js"
+}
+
+model Publisher {
+  index       Int       @id @default(autoincrement())
+  name        String
+  description String    @default("")
+  url         String
+  token       String    @default("")
+  packages    Package[]
+}
+
+model Package {
+  index          Int              @id @default(autoincrement())
+  name           String
+  description    String           @default("")
+  readme         String?          @db.LongText
+  identifier     String           @unique
+  url            String
+  docUrl         String           @default("")
+  type           String           @default("ane")
+  published      Boolean          @default(false)
+  publishedAt    DateTime         @default(now())
+  publisher      Publisher        @relation(fields: [publisherIndex], references: [index])
+  publisherIndex Int
+  license        License?         @relation(fields: [licenseIndex], references: [index])
+  licenseIndex   Int?
+  purchaseUrl    String           @default("")
+  tags           Tag[]
+  versions       PackageVersion[]
+
+  analytics      Analytics? @relation(fields: [analyticsIndex], references: [index])
+  analyticsIndex Int?
+}
+
+model PackageVersion {
+  index        Int         @id @default(autoincrement())
+  package      Package     @relation(fields: [packageIndex], references: [index])
+  packageIndex Int
+  sourceUrl    String
+  changelog    String?     @db.LongText
+  checksum     String      @default("")
+  version      String      @default("0.0.0")
+  published    Boolean     @default(false)
+  status       String      @default("")
+  publishedAt  DateTime    @default(now())
+  parameters   Parameter[]
+
+  dependencies PackageVersion[] @relation("Dependencies", references: [index])
+  requiredBy   PackageVersion[] @relation("Dependencies", references: [index])
+
+  analytics      Analytics? @relation(fields: [analyticsIndex], references: [index])
+  analyticsIndex Int?
+
+  @@unique(fields: [version, packageIndex], name: "packageVersionId")
+}
+
+model Parameter {
+  index        Int     @id @default(autoincrement())
+  name         String
+  required     Boolean @default(false)
+  defaultValue String  @default("")
+
+  packageVersions PackageVersion[]
+
+  @@unique(fields: [name, required, defaultValue], name: "nameRequiredDefault")
+}
+
+model Tag {
+  index    Int       @id @default(autoincrement())
+  name     String    @unique
+  packages Package[]
+}
+
+model License {
+  index    Int       @id @default(autoincrement())
+  type     String    @default("")
+  url      String    @default("")
+  public   Boolean   @default(true)
+  packages Package[]
+
+  @@unique(fields: [type, url], name: "typeUrl")
+}
+
+model Analytics {
+  index          Int              @id @default(autoincrement())
+  downloads      Int              @default(0)
+  installs       Int              @default(0)
+  uninstalls     Int              @default(0)
+  Package        Package[]
+  PackageVersion PackageVersion[]
+}

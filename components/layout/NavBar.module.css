@@ -1,0 +1,19 @@
+.navbar {
+  padding: 15px;
+  height: 60px;
+  vertical-align: middle;
+  display: flex;
+  flex-direction: row;
+}
+
+.navbarLogo {
+  vertical-align: middle;
+}
+
+.title {
+  font-family: "Roboto", sans-serif;
+  font-weight: bold;
+  letter-spacing: 0.05rem;
+  padding-left: 10px;
+  /* font-size: 16px; */
+}

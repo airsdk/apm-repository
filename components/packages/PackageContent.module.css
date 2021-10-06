@@ -1,0 +1,73 @@
+
+.container {
+    margin: 0 40px;
+    
+}
+
+.title {
+    
+}
+
+
+.title h1 {
+    font-size: 20px;
+}
+
+.titleName {
+    padding: 0 20px;
+}
+
+.title small {
+    /* font-style: italic; */
+    font-size: 12px;
+    font-family: 'Roboto Mono', monospace;
+}
+
+
+.summary {
+    padding: 10px 0;
+}
+
+
+.section {
+
+}
+
+
+.content small {
+    font-size: 12px;
+    font-family: 'Roboto Mono', monospace;
+}
+
+.link {
+    text-align: right;
+    font-size: 16px;
+    color: #999;
+}
+
+.metadata {
+    font-size: 12px;
+}
+
+.version  {
+    font-family: 'Roboto Mono', monospace;
+}
+
+
+
+.contentContainer {
+    display: flex;
+    justify-content: space-between;
+    width: 100%;
+    padding: 20px 10px;
+}
+
+
+.tabContainer {
+
+}
+
+.infoPanel {
+
+}
+
