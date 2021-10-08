@@ -40,6 +40,8 @@ model Package {
 
   analytics      Analytics? @relation(fields: [analyticsIndex], references: [index])
   analyticsIndex Int?
+
+  PackageDependency PackageVersionDependency[]
 }
 
 model PackageVersion {
@@ -55,11 +57,21 @@ model PackageVersion {
   publishedAt  DateTime    @default(now())
   parameters   Parameter[]
 
-  dependencies PackageVersion[] @relation("Dependencies", references: [index])
-  requiredBy   PackageVersion[] @relation("Dependencies", references: [index])
+  dependencies PackageVersionDependency[]
 
   analytics      Analytics? @relation(fields: [analyticsIndex], references: [index])
   analyticsIndex Int?
+
+  @@unique(fields: [version, packageIndex], name: "packageVersionId")
+}
+
+model PackageVersionDependency {
+  index        Int     @id @default(autoincrement())
+  package      Package @relation(fields: [packageIndex], references: [index])
+  packageIndex Int
+  version      String
+
+  packageVersions PackageVersion[]
 
   @@unique(fields: [version, packageIndex], name: "packageVersionId")
 }

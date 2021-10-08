@@ -8,12 +8,29 @@ export default async (req: NextApiRequest, res: NextApiResponse) => {
   const authHeader = req.headers.authorization;
   const token = authHeader?.substr("token ".length);
 
-  // TODO Need to validate data
+  const includePrerelease: boolean =
+    req.query.includePrerelease === undefined
+      ? false
+      : req.query.includePrerelease == "true";
+
+  const packageId = req.query.packageId;
+
   const packageReq = req.body.packageDef;
   const readme = req.body.readme;
   const changelog = req.body.changelog;
 
-  const packageId = req.query.packageId;
+  // TODO Need to validate data
+  // Validate data
+  // Validate published date
+  var publishedAt = new Date().toISOString();
+  if (packageReq.publishedAt.length > 0) {
+    try {
+      publishedAt = new Date(packageReq.publishedAt).toISOString();
+    } catch (e) {}
+  }
+  if (packageReq.parameters === undefined) {
+    packageReq.parameters = [];
+  }
 
   // Some level of auth using a token
   // TODO improve this
@@ -33,15 +50,54 @@ export default async (req: NextApiRequest, res: NextApiResponse) => {
   if (publisher) {
     // Determine dependencies
     // TODO improve this ?
-    let dependencies: Prisma.Enumerable<Prisma.PackageVersionWhereUniqueInput> =
+
+    let dependencies: Prisma.Enumerable<Prisma.PackageVersionDependencyCreateOrConnectWithoutPackageVersionsInput> =
       await Promise.all(
         packageReq.dependencies.map(
           async (d: { id: string; version: string }) => {
+            var excludedStatusValues: string[] = [];
+            var versionQuery: string = d.version;
+            // Check for a version range query
+            if (versionQuery.indexOf("x") >= 0) {
+              // Remove x to get something like "4.5." from "4.5.x"
+              versionQuery = versionQuery.substring(
+                0,
+                versionQuery.indexOf("x")
+              );
+
+              // This is a query so limit status
+              if (!includePrerelease) excludedStatusValues.push("prerelease");
+              excludedStatusValues.push("discontinued");
+            }
+
             const p = await prisma.package.findFirst({
               where: { identifier: d.id },
+              include: {
+                versions: {
+                  where: {
+                    published: true,
+                    version: {
+                      startsWith: versionQuery,
+                    },
+                    status: {
+                      notIn: excludedStatusValues,
+                    },
+                  },
+                  orderBy: {
+                    publishedAt: "desc",
+                  },
+                  take: 1,
+                },
+              },
             });
             return {
-              packageVersionId: {
+              where: {
+                packageVersionId: {
+                  version: d.version,
+                  packageIndex: p?.index,
+                },
+              },
+              create: {
                 version: d.version,
                 packageIndex: p?.index,
               },
@@ -49,14 +105,6 @@ export default async (req: NextApiRequest, res: NextApiResponse) => {
           }
         )
       );
-
-    // Validate published date
-    var publishedAt = new Date().toISOString();
-    if (packageReq.publishedAt.length > 0) {
-      try {
-        publishedAt = new Date(packageReq.publishedAt).toISOString();
-      } catch (e) {}
-    }
 
     if (publisher.packages.length > 0) {
       //
@@ -78,7 +126,7 @@ export default async (req: NextApiRequest, res: NextApiResponse) => {
           publishedAt: publishedAt,
           changelog: changelog,
           dependencies: {
-            connect: dependencies,
+            connectOrCreate: dependencies,
           },
           parameters: {
             connectOrCreate: packageReq.parameters.map(
@@ -115,7 +163,7 @@ export default async (req: NextApiRequest, res: NextApiResponse) => {
           status: validateStatus(packageReq.status),
           publishedAt: publishedAt,
           dependencies: {
-            connect: dependencies,
+            connectOrCreate: dependencies,
           },
           parameters: {
             connectOrCreate: packageReq.parameters.map(
@@ -192,6 +240,8 @@ export default async (req: NextApiRequest, res: NextApiResponse) => {
           }),
         },
       };
+
+      console.log(packageUpdate);
 
       const packageNewResult = await prisma.package.update({
         where: {
@@ -289,7 +339,7 @@ export default async (req: NextApiRequest, res: NextApiResponse) => {
                 status: validateStatus(packageReq.status),
                 publishedAt: publishedAt,
                 dependencies: {
-                  connect: dependencies,
+                  connectOrCreate: dependencies,
                 },
                 parameters: {
                   connectOrCreate: packageReq.parameters.map(
