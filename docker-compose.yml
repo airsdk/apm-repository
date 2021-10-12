@@ -1,0 +1,22 @@
+---
+version: "3.0"
+services:
+  web:
+    build: .
+    restart: always
+    environment:
+      DATABASE_URL: mysql://apm:changeme@db/apm
+    ports:
+      - "3000:3000"
+    links:
+      - db
+  db:
+    image: mysql:latest
+    restart: always
+    volumes:
+      - "./volumes/mysql:/var/lib/mysql"
+    environment:
+      MYSQL_USER: apm
+      MYSQL_PASSWORD: changeme
+      MYSQL_DATABASE: apm
+      MYSQL_ROOT_PASSWORD: changeme
