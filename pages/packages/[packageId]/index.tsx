@@ -13,14 +13,14 @@ import { findLatest } from "../../../lib/queries";
 const PackagePage = () => {
   const router = useRouter();
   const { packageId } = router.query;
-
   const { data, isLoading, isError } = findLatest(String(packageId));
+  const siteTitleWithPackageId = siteTitle + (packageId ? ": " + packageId : "");
 
   return (
     <Layout home>
       <Head>
         <title>
-          {siteTitle}: {packageId}
+          {siteTitleWithPackageId}
         </title>
       </Head>
 

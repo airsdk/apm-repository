@@ -2,10 +2,10 @@ import { Package } from "types/model";
 
 import styles from "./PackageContentReadme.module.css";
 
-import unified from "unified";
-import parse from "remark-parse";
-import remark2react from "remark-react";
-import { ReactElement } from "react";
+import {unified} from "unified";
+import remarkParse from "remark-parse";
+import remarkReact from "remark-react";
+import { createElement, useState, ReactElement } from "react";
 
 function NoReadme() {
   return (
@@ -21,6 +21,7 @@ export default function PackageContentReadme({
 }: {
   packageData: Package | undefined;
 }) {
+
   if (packageData === undefined || packageData?.readme.length === 0) {
     return (
       <div className={styles.container}>
@@ -30,8 +31,8 @@ export default function PackageContentReadme({
   }
 
   const content = unified()
-    .use(parse)
-    .use(remark2react)
+    .use(remarkParse)
+    .use(remarkReact, { createElement })
     .processSync(packageData?.readme).result as ReactElement;
 
   return <div className={styles.readme}>{content}</div>;

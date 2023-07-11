@@ -38,7 +38,13 @@ export type PackageVersion = {
   publishedAt: string;
   dependencies: Array<PackageVersion>;
   parameters: Array<Parameter>;
+  platforms: Array<Platform>;
   analytics?: Analytics;
+};
+
+export type Platform = {
+  index: number;
+  name: string;
 };
 
 export type Parameter = {
