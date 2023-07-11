@@ -56,6 +56,7 @@ model PackageVersion {
   status       String      @default("")
   publishedAt  DateTime    @default(now())
   parameters   Parameter[]
+  platforms    Platform[]
 
   dependencies PackageVersionDependency[]
 
@@ -110,4 +111,10 @@ model Analytics {
   uninstalls     Int              @default(0)
   Package        Package[]
   PackageVersion PackageVersion[]
+}
+
+model Platform {
+  index           Int              @id @default(autoincrement())
+  name            String           @unique
+  packageVersions PackageVersion[]
 }

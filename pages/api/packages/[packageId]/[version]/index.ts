@@ -42,6 +42,7 @@ export default async (req: NextApiRequest, res: NextApiResponse) => {
             },
           },
           parameters: true,
+          platforms: true,
         },
         where: {
           published: true,
