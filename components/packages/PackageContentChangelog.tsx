@@ -1,4 +1,4 @@
-import { unified } from "unified";
+import unified from "unified";
 import remarkParse from "remark-parse";
 import remarkReact from "remark-react";
 import { createElement, ReactElement } from "react";
@@ -33,3 +33,4 @@ export default function PackageContentChangelog({
 
   return <div className={styles.changelog}>{content}</div>;
 }
+

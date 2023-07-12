@@ -2,7 +2,7 @@ import { Package } from "types/model";
 
 import styles from "./PackageContentReadme.module.css";
 
-import {unified} from "unified";
+import unified from "unified";
 import remarkParse from "remark-parse";
 import remarkReact from "remark-react";
 import { createElement, useState, ReactElement } from "react";

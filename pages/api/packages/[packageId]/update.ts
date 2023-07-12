@@ -1,7 +1,6 @@
 import type { NextApiRequest, NextApiResponse } from "next";
 import prisma from "../../../../lib/prisma";
-import type { Package, Platform } from "@prisma/client";
-import { version } from "process";
+import type { Platform } from "@prisma/client";
 import { Prisma } from "@prisma/client";
 
 const validatePlatform = (platform: Platform) => {
