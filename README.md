@@ -37,6 +37,12 @@ Setup the environment by connecting a database. Create a `.env` in the root of t
 DATABASE_URL="mysql://USERNAME:PASSWORD@localhost:3306/apm_repository"
 ```
 
+To generate your initial prisma mappings run:
+
+```bash
+npx prisma generate
+```
+
 Prisma supports the native connection string format for PostgreSQL, MySQL and SQLite. See the documentation for all the [connection string options](https://pris.ly/d/connection-strings)
 
 Populate the database with the correct database structure by running:
@@ -56,3 +62,12 @@ npm run dev
 ```
 
 Open [http://localhost:3000](http://localhost:3000) with your browser to see the result.
+
+
+
+## Deploy
+
+```bash
+npm run build
+```
+
