@@ -70,7 +70,7 @@ export default async (req: NextApiRequest, res: NextApiResponse) => {
     },
   });
 
-  if (!publisher) {
+  if (publisher == null) {
     // Unauthorised
     return res.status(401).json({
       packageId: String(packageId),
@@ -137,7 +137,7 @@ export default async (req: NextApiRequest, res: NextApiResponse) => {
       )
     );
 
-  if (publisher.packages.length > 0) {
+  if (publisher!.packages.length > 0) {
     //
     // UPDATE / CREATE PACKAGE VERSION
     //
@@ -145,7 +145,7 @@ export default async (req: NextApiRequest, res: NextApiResponse) => {
       where: {
         packageVersionId: {
           version: packageReq.version,
-          packageIndex: publisher.packages[0].index,
+          packageIndex: publisher!.packages[0].index,
         },
       },
       update: {
@@ -193,7 +193,7 @@ export default async (req: NextApiRequest, res: NextApiResponse) => {
         },
       },
       create: {
-        package: { connect: { index: publisher.packages[0].index } },
+        package: { connect: { index: publisher!.packages[0].index } },
         sourceUrl: packageReq.sourceUrl,
         checksum: packageReq.checksum,
         version: packageReq.version,
@@ -292,7 +292,7 @@ export default async (req: NextApiRequest, res: NextApiResponse) => {
 
     const packageNewResult = await prisma.package.update({
       where: {
-        index: publisher.packages[0].index,
+        index: publisher!.packages[0].index,
       },
       data: packageUpdate,
     });
@@ -365,7 +365,7 @@ export default async (req: NextApiRequest, res: NextApiResponse) => {
       published: true,
       publisher: {
         connect: {
-          index: publisher.index,
+          index: publisher!.index,
         },
       },
       tags: {
