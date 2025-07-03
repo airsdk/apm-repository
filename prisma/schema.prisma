@@ -45,18 +45,19 @@ model Package {
 }
 
 model PackageVersion {
-  index        Int         @id @default(autoincrement())
-  package      Package     @relation(fields: [packageIndex], references: [index])
-  packageIndex Int
-  sourceUrl    String
-  changelog    String?     @db.LongText
-  checksum     String      @default("")
-  version      String      @default("0.0.0")
-  published    Boolean     @default(false)
-  status       String      @default("")
-  publishedAt  DateTime    @default(now())
-  parameters   Parameter[]
-  platforms    Platform[]
+  index              Int                 @id @default(autoincrement())
+  package            Package             @relation(fields: [packageIndex], references: [index])
+  packageIndex       Int
+  sourceUrl          String
+  changelog          String?             @db.LongText
+  checksum           String              @default("")
+  version            String              @default("0.0.0")
+  published          Boolean             @default(false)
+  status             String              @default("")
+  publishedAt        DateTime            @default(now())
+  parameters         Parameter[]
+  platforms          Platform[]
+  platformParameters PlatformParameter[]
 
   dependencies PackageVersionDependency[]
 
@@ -117,4 +118,15 @@ model Platform {
   index           Int              @id @default(autoincrement())
   name            String           @unique
   packageVersions PackageVersion[]
+}
+
+model PlatformParameter {
+  index    Int    @id @default(autoincrement())
+  name     String
+  value    String
+  platform String
+
+  packageVersions PackageVersion[]
+
+  @@unique(fields: [name, value, platform], name: "nameValuePlatform")
 }

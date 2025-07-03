@@ -1,9 +1,16 @@
 import type { NextApiRequest, NextApiResponse } from "next";
 import prisma from "../../../../lib/prisma";
-import type { Platform } from "@prisma/client";
-import { Prisma } from "@prisma/client";
+import type { Platform, Publisher } from "@prisma/client";
+import { createNewPackage, getDependencies, getPublisher, updateExistingPackage } from "lib/utils/packageUpdates";
 
-const validatePlatform = (platform: Platform) => {
+
+const validatePlatform = (platform: Platform | string) => {
+  if (platform === null || platform === undefined) {
+    return false;
+  }
+  if (typeof platform === "string") {
+    platform = { name: platform } as Platform;
+  }
   platform.name = platform.name.toLowerCase();
   switch (platform.name) {
     case 'windows':
@@ -16,10 +23,37 @@ const validatePlatform = (platform: Platform) => {
   return false;
 }
 
+const checkAuthorised = async (publisher: any, packageId: string) => {
+
+  if (publisher === null || publisher === undefined) {
+    return false; // Unauthorised
+  }
+
+  if (publisher!.packages.length == 0) {
+    // check if package is published by a different publisher
+    const existingPackage = await prisma.package.findMany({
+      where: {
+        identifier: String(packageId),
+      },
+    });
+    if (existingPackage.length > 0) {
+      return false; // Package exists but not by this publisher
+    }
+  }
+  return true; // Authorised
+};
+
 
 export default async (req: NextApiRequest, res: NextApiResponse) => {
   const authHeader = req.headers.authorization;
   const token = authHeader?.substr("token ".length);
+  if (token === undefined) {
+    return res.status(401).json({
+      packageId: String(req.query.packageId),
+      success: false,
+      message: "You are not authorised access this API",
+    });
+  }
 
   const includePrerelease: boolean =
     req.query.includePrerelease === undefined
@@ -27,13 +61,27 @@ export default async (req: NextApiRequest, res: NextApiResponse) => {
       : req.query.includePrerelease == "true";
 
   const packageId = req.query.packageId;
-
   const packageReq = req.body.packageDef;
   const readme = req.body.readme;
   const changelog = req.body.changelog;
 
-  // TODO Need to validate data
-  // Validate data
+  const publisher = await getPublisher(token!, String(packageId));
+  if (publisher == null) {
+    return res.status(401).json({
+      packageId: String(packageId),
+      success: false,
+      message: "You are not authorised access this API",
+    });
+  }
+  const authorised = await checkAuthorised(publisher, String(packageId));
+  if (!authorised) {
+    return res.status(401).json({
+      packageId: String(packageId),
+      success: false,
+      message: "You are not authorised to modify this package",
+    });
+  }
+
   // Validate published date
   var publishedAt = new Date().toISOString();
   if (packageReq.publishedAt.length > 0) {
@@ -41,262 +89,61 @@ export default async (req: NextApiRequest, res: NextApiResponse) => {
       publishedAt = new Date(packageReq.publishedAt).toISOString();
     } catch (e) { }
   }
+
+  // Validate parameters
   if (packageReq.parameters === undefined) {
     packageReq.parameters = [];
   }
-  var platforms = packageReq.platforms;
-  packageReq.platforms = [];
-  if (platforms !== undefined) {
-    for (const platform of platforms) {
-      if (validatePlatform(platform)) {
-        packageReq.platforms.push(platform);
-      }
+
+  // Validate platforms
+  if (packageReq.platforms === undefined) {
+    packageReq.platforms = [];
+  }
+  packageReq.platforms = packageReq.platforms.map((p: Platform | string) => {
+    if (typeof p === "string") {
+      p = { name: p } as Platform;
     }
+    p.name = p.name.toLowerCase();
+    return p;
+  })
+    .filter((p: any) => validatePlatform(p));
+
+  // Validate platform parameters - convert to array (name,value,platform)
+  console.log("packageReq.platformParameters", packageReq.platformParameters);
+  if (packageReq.platformParameters === undefined) {
+    packageReq.platformParameters = [];
   }
-  console.log(packageReq.platforms);
-
-  // Some level of auth using a token
-  // TODO improve this
-  const publisher = await prisma.publisher.findFirst({
-    where: {
-      token: String(token),
-    },
-    include: {
-      packages: {
-        where: {
-          identifier: String(packageId),
-        },
-      },
-    },
-  });
-
-  if (publisher == null) {
-    // Unauthorised
-    return res.status(401).json({
-      packageId: String(packageId),
-      success: false,
-      message: "You are not authorised access this API",
+  if (packageReq.platformParameters && typeof packageReq.platformParameters === 'object' && !Array.isArray(packageReq.platformParameters)) {
+    const flattenedParams: { name: string; value: string; platform: string }[] = [];
+    Object.keys(packageReq.platformParameters).forEach(platform => {
+      const platformData = packageReq.platformParameters[platform];
+      Object.keys(platformData).forEach(paramName => {
+        flattenedParams.push({
+          platform: platform,
+          name: paramName,
+          value: platformData[paramName]
+        });
+      });
     });
+    packageReq.platformParameters = flattenedParams;
   }
-
+  packageReq.platformParameters = packageReq.platformParameters.map((p: any) => {
+    if (p.platform) p.platform = p.platform.toLowerCase();
+    return p;
+  })
+    .filter((p: any) => validatePlatform(p.platform));
 
   // Determine dependencies
-  // TODO improve this ?
-  let dependencies: Prisma.Enumerable<Prisma.PackageVersionDependencyCreateOrConnectWithoutPackageVersionsInput> =
-    await Promise.all(
-      packageReq.dependencies.map(
-        async (d: { id: string; version: string }) => {
-          var excludedStatusValues: string[] = [];
-          var versionQuery: string = d.version;
-          // Check for a version range query
-          if (versionQuery.indexOf("x") >= 0) {
-            // Remove x to get something like "4.5." from "4.5.x"
-            versionQuery = versionQuery.substring(
-              0,
-              versionQuery.indexOf("x")
-            );
-
-            // This is a query so limit status
-            if (!includePrerelease) excludedStatusValues.push("prerelease");
-            excludedStatusValues.push("discontinued");
-          }
-
-          const p = await prisma.package.findFirst({
-            where: { identifier: d.id },
-            include: {
-              versions: {
-                where: {
-                  published: true,
-                  version: {
-                    startsWith: versionQuery,
-                  },
-                  status: {
-                    notIn: excludedStatusValues,
-                  },
-                },
-                orderBy: {
-                  publishedAt: "desc",
-                },
-                take: 1,
-              },
-            },
-          });
-          return {
-            where: {
-              packageVersionId: {
-                version: d.version,
-                packageIndex: p?.index,
-              },
-            },
-            create: {
-              version: d.version,
-              packageIndex: p?.index,
-            },
-          };
-        }
-      )
-    );
+  let dependencies = await getDependencies(packageReq, includePrerelease);
 
   if (publisher!.packages.length > 0) {
-    //
-    // UPDATE / CREATE PACKAGE VERSION
-    //
-    const packageVersionUpdateResult = await prisma.packageVersion.upsert({
-      where: {
-        packageVersionId: {
-          version: packageReq.version,
-          packageIndex: publisher!.packages[0].index,
-        },
-      },
-      update: {
-        sourceUrl: packageReq.sourceUrl,
-        checksum: packageReq.checksum,
-        version: packageReq.version,
-        published: publishedFromStatus(packageReq.status),
-        status: validateStatus(packageReq.status),
-        publishedAt: publishedAt,
-        changelog: changelog,
-        dependencies: {
-          connectOrCreate: dependencies,
-        },
-        parameters: {
-          connectOrCreate: packageReq.parameters.map(
-            (m: {
-              name: string;
-              required: boolean;
-              defaultValue: string;
-            }) => {
-              return {
-                create: {
-                  name: m.name,
-                  required: m.required,
-                  defaultValue: m.defaultValue,
-                },
-                where: {
-                  nameRequiredDefault: {
-                    name: m.name,
-                    required: m.required,
-                    defaultValue: m.defaultValue,
-                  },
-                },
-              };
-            }
-          ),
-        },
-        platforms: {
-          connectOrCreate: packageReq.platforms.map((m: { name: String }) => {
-            return {
-              create: { name: m.name },
-              where: { name: m.name },
-            };
-          }),
-        },
-      },
-      create: {
-        package: { connect: { index: publisher!.packages[0].index } },
-        sourceUrl: packageReq.sourceUrl,
-        checksum: packageReq.checksum,
-        version: packageReq.version,
-        changelog: changelog,
-        published: publishedFromStatus(packageReq.status),
-        status: validateStatus(packageReq.status),
-        publishedAt: publishedAt,
-        dependencies: {
-          connectOrCreate: dependencies,
-        },
-        parameters: {
-          connectOrCreate: packageReq.parameters.map(
-            (m: {
-              name: string;
-              required: boolean;
-              defaultValue: string;
-            }) => {
-              return {
-                create: {
-                  name: m.name,
-                  required: m.required,
-                  defaultValue: m.defaultValue,
-                },
-                where: {
-                  nameRequiredDefault: {
-                    name: m.name,
-                    required: m.required,
-                    defaultValue: m.defaultValue,
-                  },
-                },
-              };
-            }
-          ),
-        },
-        platforms: {
-          connectOrCreate: packageReq.platforms.map((m: { name: String }) => {
-            return {
-              create: { name: m.name },
-              where: { name: m.name },
-            };
-          }),
-        },
-      },
-    });
-
-    //
-    // UPDATE EXISTING PACKAGE
-    //
-    let packageUpdate: Prisma.PackageUpdateInput = {
-      name: packageReq.name,
-      description: packageReq.description,
-      readme: readme,
-      url: packageReq.url,
-      docUrl: packageReq.docUrl,
-      purchaseUrl: packageReq.purchaseUrl,
-      license: {
-        connectOrCreate: {
-          create: {
-            type:
-              packageReq.license !== undefined
-                ? packageReq.license.type
-                : "none",
-            public:
-              packageReq.license !== undefined
-                ? packageReq.license.public
-                : false,
-            url:
-              packageReq.license !== undefined ? packageReq.license.url : "",
-          },
-          where: {
-            typeUrl: {
-              type:
-                packageReq.license !== undefined
-                  ? packageReq.license.type
-                  : "none",
-              url:
-                packageReq.license !== undefined
-                  ? packageReq.license.url
-                  : "",
-            },
-          },
-        },
-      },
-      published: true,
-      tags: {
-        connectOrCreate: packageReq.tags.map((m: String) => {
-          return {
-            create: { name: m },
-            where: { name: m },
-          };
-        }),
-      },
-    };
-
-    console.log(packageUpdate);
-
-    const packageNewResult = await prisma.package.update({
-      where: {
-        index: publisher!.packages[0].index,
-      },
-      data: packageUpdate,
-    });
-
+    const packageNewResult = await updateExistingPackage(
+      packageReq,
+      readme,
+      dependencies,
+      publishedAt,
+      changelog,
+      publisher);
     res.status(200).json({
       packageId: String(packageId),
       success: true,
@@ -304,132 +151,17 @@ export default async (req: NextApiRequest, res: NextApiResponse) => {
       p: packageReq,
       n: packageNewResult,
     });
-  } else {
-    // check if package publisher not allowed
-    const existingPackage = await prisma.package.findMany({
-      where: {
-        identifier: String(packageId),
-      },
-    });
-
-    if (existingPackage.length > 0) {
-      return res.status(401).json({
-        packageId: String(packageId),
-        success: false,
-        message: "You are not authorised to modify this package",
-      });
-    }
-
-    //
-    // CREATE NEW PACKAGE + VERSION
-    //
-    let packageCreate: Prisma.PackageCreateInput = {
-      name: packageReq.name,
-      description: packageReq.description,
-      readme: readme,
-      identifier: String(packageId),
-      url: packageReq.url,
-      docUrl: packageReq.docUrl,
-      purchaseUrl: packageReq.purchaseUrl,
-      license: {
-        connectOrCreate: {
-          create: {
-            type:
-              packageReq.license !== undefined
-                ? packageReq.license.type
-                : "none",
-            public:
-              packageReq.license !== undefined
-                ? packageReq.license.public
-                : false,
-            url:
-              packageReq.license !== undefined
-                ? packageReq.license.url
-                : "",
-          },
-          where: {
-            typeUrl: {
-              type:
-                packageReq.license !== undefined
-                  ? packageReq.license.type
-                  : "none",
-              url:
-                packageReq.license !== undefined
-                  ? packageReq.license.url
-                  : "",
-            },
-          },
-        },
-      },
-      type: packageReq.type,
-      published: true,
-      publisher: {
-        connect: {
-          index: publisher!.index,
-        },
-      },
-      tags: {
-        connectOrCreate: packageReq.tags.map((m: String) => {
-          return {
-            create: { name: m },
-            where: { name: m },
-          };
-        }),
-      },
-      versions: {
-        create: [
-          {
-            sourceUrl: packageReq.sourceUrl,
-            checksum: packageReq.checksum,
-            version: packageReq.version,
-            changelog: changelog,
-            published: publishedFromStatus(packageReq.status),
-            status: validateStatus(packageReq.status),
-            publishedAt: publishedAt,
-            dependencies: {
-              connectOrCreate: dependencies,
-            },
-            parameters: {
-              connectOrCreate: packageReq.parameters.map(
-                (m: {
-                  name: string;
-                  required: boolean;
-                  defaultValue: string;
-                }) => {
-                  return {
-                    create: {
-                      name: m.name,
-                      required: m.required,
-                      defaultValue: m.defaultValue,
-                    },
-                    where: {
-                      nameRequiredDefault: {
-                        name: m.name,
-                        required: m.required,
-                        defaultValue: m.defaultValue,
-                      },
-                    },
-                  };
-                }
-              ),
-            },
-            platforms: {
-              connectOrCreate: packageReq.platforms.map((m: { name: String }) => {
-                return {
-                  create: { name: m.name },
-                  where: { name: m.name },
-                };
-              }),
-            },
-          },
-        ],
-      },
-    };
-
-    const packageNewResult = await prisma.package.create({
-      data: packageCreate,
-    });
-
+  }
+  else {
+    const packageNewResult = await createNewPackage(
+      packageReq,
+      String(packageId),
+      readme,
+      dependencies,
+      publishedAt,
+      changelog,
+      publisher
+    );
     res.status(200).json({
       packageId: String(packageId),
       success: true,
@@ -441,21 +173,3 @@ export default async (req: NextApiRequest, res: NextApiResponse) => {
 
 };
 
-function validateStatus(status: string): string {
-  if (status !== undefined) {
-    switch (status) {
-      case "release":
-      case "prerelease":
-      case "discontinued":
-        return status;
-    }
-  }
-  return "release";
-}
-
-function publishedFromStatus(status: string): boolean {
-  if (validateStatus(status) == "removed") {
-    return false;
-  }
-  return true;
-}

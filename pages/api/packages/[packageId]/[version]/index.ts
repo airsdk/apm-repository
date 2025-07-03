@@ -1,5 +1,6 @@
 import type { NextApiRequest, NextApiResponse } from "next";
 import prisma from "../../../../../lib/prisma";
+import { processPackageData } from "lib/utils/processPackageData";
 
 export default async (req: NextApiRequest, res: NextApiResponse) => {
   const packageId: string = String(req.query.packageId);
@@ -23,7 +24,7 @@ export default async (req: NextApiRequest, res: NextApiResponse) => {
     excludedStatusValues.push("discontinued");
   }
 
-  const packageData = await prisma.package.findFirst({
+  let packageData = await prisma.package.findFirst({
     where: {
       published: true,
       identifier: String(packageId),
@@ -43,6 +44,7 @@ export default async (req: NextApiRequest, res: NextApiResponse) => {
           },
           parameters: true,
           platforms: true,
+          platformParameters: true,
         },
         where: {
           published: true,
@@ -62,6 +64,7 @@ export default async (req: NextApiRequest, res: NextApiResponse) => {
   });
 
   if (packageData) {
+    packageData = processPackageData(packageData);
     res.status(200).json(packageData);
   } else {
     res.status(404).json({});
