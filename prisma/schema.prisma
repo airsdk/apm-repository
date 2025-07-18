@@ -79,10 +79,11 @@ model PackageVersionDependency {
 }
 
 model Parameter {
-  index        Int     @id @default(autoincrement())
+  index        Int        @id @default(autoincrement())
   name         String
-  required     Boolean @default(false)
-  defaultValue String  @default("")
+  required     Boolean    @default(false)
+  defaultValue String     @default("")
+  platforms    Platform[]
 
   packageVersions PackageVersion[]
 
@@ -118,6 +119,7 @@ model Platform {
   index           Int              @id @default(autoincrement())
   name            String           @unique
   packageVersions PackageVersion[]
+  parameters      Parameter[]
 }
 
 model PlatformParameter {

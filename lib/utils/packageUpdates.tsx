@@ -25,8 +25,6 @@ const publishedFromStatus = (status: string): boolean => {
 }
 
 
-
-
 const getPublisher = async (token: string, packageId: string) => {
   // Some level of auth using a token
   // TODO improve this
@@ -113,7 +111,6 @@ const getDependencies = async (packageReq: any, includePrerelease: boolean): Pro
 }
 
 
-
 const upsertPackageVersion = async (
   packageReq: any,
   dependencies: Prisma.Enumerable<Prisma.PackageVersionDependencyCreateOrConnectWithoutPackageVersionsInput>,
@@ -149,12 +146,21 @@ const upsertPackageVersion = async (
             name: string;
             required: boolean;
             defaultValue: string;
+            platforms: string[];
           }) => {
             return {
               create: {
                 name: m.name,
                 required: m.required,
                 defaultValue: m.defaultValue,
+                platforms: {
+                  connectOrCreate: (m.platforms ?? []).map((p: string) => {
+                    return {
+                      create: { name: p },
+                      where: { name: p },
+                    };
+                  }),
+                }
               },
               where: {
                 nameRequiredDefault: {
@@ -212,12 +218,21 @@ const upsertPackageVersion = async (
             name: string;
             required: boolean;
             defaultValue: string;
+            platforms?: string[];
           }) => {
             return {
               create: {
                 name: m.name,
                 required: m.required,
                 defaultValue: m.defaultValue,
+                platforms: {
+                  connectOrCreate: (m.platforms ?? []).map((p: string) => {
+                    return {
+                      create: { name: p },
+                      where: { name: p },
+                    };
+                  }),
+                }
               },
               where: {
                 nameRequiredDefault: {
@@ -259,8 +274,71 @@ const upsertPackageVersion = async (
     }
   });
 
+  console.log("upsertPackageVersion", packageVersionUpdateResult);
+
+  await updatePackageVersionParameters( packageReq );
+
   return packageVersionUpdateResult;
 }
+
+
+const updatePackageVersionParameters = async (packageReq: any) => {
+  for (const p of packageReq.parameters) {
+    // Ensure the parameter platforms are connected
+    const result = await prisma.parameter.findFirst({
+      where: {
+        name: p.name,
+        required: p.required,
+        defaultValue: p.defaultValue,
+      },
+      include: {
+        platforms: true,
+      },
+    });
+
+    if (result) {
+      // Get platforms to connect (new platforms)
+      const platformsToConnect = (p.platforms || []).filter((platform: string) => {
+        return !result.platforms.some((existingPlatform: Platform) =>
+          existingPlatform.name.toLowerCase() === platform.toLowerCase());
+      });
+
+      // Get platforms to disconnect (platforms no longer in the list)
+      const platformsToDisconnect = result.platforms
+        .filter((existingPlatform: Platform) =>
+          !(p.platforms || []).some((platform: string) =>
+            platform.toLowerCase() === existingPlatform.name.toLowerCase()));
+
+      // Only update if there are changes
+      if (platformsToConnect.length > 0 || platformsToDisconnect.length > 0) {
+        console.log("Updating parameter platforms", p.name, platformsToConnect, platformsToDisconnect);
+        await prisma.parameter.update({
+          where: {
+            nameRequiredDefault: {
+              name: p.name,
+              required: String(p.required) == 'true',
+              defaultValue: p.defaultValue,
+            },
+          },
+          data: {
+            platforms: {
+              // Connect new platforms
+              connectOrCreate: platformsToConnect.map((platform: string) => ({
+                create: { name: platform.toLowerCase() },
+                where: { name: platform.toLowerCase() },
+              })),
+              // Disconnect removed platforms
+              disconnect: platformsToDisconnect.map((platform: Platform) => ({
+                name: platform.name,
+              })),
+            },
+          },
+        });
+      }
+    }
+  }
+}
+
 
 const updateExistingPackage = async (
   packageReq: any,
@@ -326,8 +404,6 @@ const updateExistingPackage = async (
       }),
     },
   };
-
-  console.log(packageUpdate);
 
   const packageNewResult = await prisma.package.update({
     where: {
@@ -424,12 +500,21 @@ const createNewPackage = async (
                 name: string;
                 required: boolean;
                 defaultValue: string;
+                platforms?: string[];
               }) => {
                 return {
                   create: {
                     name: m.name,
                     required: m.required,
                     defaultValue: m.defaultValue,
+                    platforms: {
+                      connectOrCreate: (m.platforms ?? []).map((p: string) => {
+                        return {
+                          create: { name: p },
+                          where: { name: p },
+                        };
+                      }),
+                    }
                   },
                   where: {
                     nameRequiredDefault: {
@@ -476,6 +561,9 @@ const createNewPackage = async (
   const packageNewResult = await prisma.package.create({
     data: packageCreate,
   });
+
+  await updatePackageVersionParameters(packageReq);
+
   return packageNewResult;
 }
 

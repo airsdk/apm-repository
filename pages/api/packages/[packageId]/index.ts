@@ -4,7 +4,6 @@ import { processPackageData } from "lib/utils/processPackageData";
 
 export default async (req: NextApiRequest, res: NextApiResponse) => {
   const packageId = req.query.packageId;
-
   const includePrerelease =
     req.query.includePrerelease === undefined
       ? false
@@ -30,7 +29,11 @@ export default async (req: NextApiRequest, res: NextApiResponse) => {
               package: true,
             },
           },
-          parameters: true,
+          parameters: {
+            include: {
+              platforms: true,
+            },
+          },
           platforms: true,
           platformParameters: true,
         },

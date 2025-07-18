@@ -29,7 +29,11 @@ export default async (req: NextApiRequest, res: NextApiResponse) => {
               package: true,
             },
           },
-          parameters: true,
+          parameters: {
+            include: {
+              platforms: true,
+            },
+          },
           platforms: true,
           platformParameters: true,
         },

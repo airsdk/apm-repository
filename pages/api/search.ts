@@ -1,5 +1,6 @@
 import type { NextApiRequest, NextApiResponse } from "next";
 import prisma from "../../lib/prisma";
+import { processPackageDataArray } from "lib/utils/processPackageData";
 
 export default async (req: NextApiRequest, res: NextApiResponse) => {
   const { q, t } = req.query;
@@ -60,6 +61,5 @@ export default async (req: NextApiRequest, res: NextApiResponse) => {
     },
   });
 
-  // res.status(200).json(tagPackageIndexes);
-  res.status(200).json(packages);
+  res.status(200).json(processPackageDataArray(packages));
 };

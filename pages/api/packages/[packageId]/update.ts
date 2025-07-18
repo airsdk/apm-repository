@@ -15,6 +15,7 @@ const validatePlatform = (platform: Platform | string) => {
   switch (platform.name) {
     case 'windows':
     case 'macos':
+    case 'tvos':
     case 'ios':
     case 'android':
     case 'linux':
@@ -94,6 +95,15 @@ export default async (req: NextApiRequest, res: NextApiResponse) => {
   if (packageReq.parameters === undefined) {
     packageReq.parameters = [];
   }
+  packageReq.parameters = packageReq.parameters.map((p: any) => {
+    if (typeof p === "string") {
+      p = { name: p } as any;
+    }
+    p.name = p.name.toLowerCase();
+    p.required = p.required === "true" || p.required === true;
+    return p;
+  })
+    .filter((p: any) => validatePlatform(p.platform));
 
   // Validate platforms
   if (packageReq.platforms === undefined) {

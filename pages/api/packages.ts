@@ -1,5 +1,6 @@
 import type { NextApiRequest, NextApiResponse } from "next";
 import prisma from "../../lib/prisma";
+import { processPackageDataArray } from "lib/utils/processPackageData";
 
 export default async (req: NextApiRequest, res: NextApiResponse) => {
   const includePrerelease =
@@ -27,5 +28,5 @@ export default async (req: NextApiRequest, res: NextApiResponse) => {
     },
   });
 
-  res.status(200).json(packages);
+  res.status(200).json(processPackageDataArray(packages));
 };
