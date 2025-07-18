@@ -146,13 +146,15 @@ const upsertPackageVersion = async (
             name: string;
             required: boolean;
             defaultValue: string;
-            platforms: string[];
+            description?: string;
+            platforms?: string[];
           }) => {
             return {
               create: {
                 name: m.name,
                 required: m.required,
                 defaultValue: m.defaultValue,
+                description: m.description || "",
                 platforms: {
                   connectOrCreate: (m.platforms ?? []).map((p: string) => {
                     return {
@@ -218,6 +220,7 @@ const upsertPackageVersion = async (
             name: string;
             required: boolean;
             defaultValue: string;
+            description?: string;
             platforms?: string[];
           }) => {
             return {
@@ -225,6 +228,7 @@ const upsertPackageVersion = async (
                 name: m.name,
                 required: m.required,
                 defaultValue: m.defaultValue,
+                description: m.description || "",
                 platforms: {
                   connectOrCreate: (m.platforms ?? []).map((p: string) => {
                     return {
@@ -284,6 +288,20 @@ const upsertPackageVersion = async (
 
 const updatePackageVersionParameters = async (packageReq: any) => {
   for (const p of packageReq.parameters) {
+
+    await prisma.parameter.update({
+      where: {
+        nameRequiredDefault: {
+          name: p.name,
+          required: p.required,
+          defaultValue: p.defaultValue,
+        },
+      },
+      data: {
+        description: p.description || "",
+      },
+    });
+
     // Ensure the parameter platforms are connected
     const result = await prisma.parameter.findFirst({
       where: {
@@ -500,6 +518,7 @@ const createNewPackage = async (
                 name: string;
                 required: boolean;
                 defaultValue: string;
+                description?: string;
                 platforms?: string[];
               }) => {
                 return {
@@ -507,6 +526,7 @@ const createNewPackage = async (
                     name: m.name,
                     required: m.required,
                     defaultValue: m.defaultValue,
+                    description: m.description || "",
                     platforms: {
                       connectOrCreate: (m.platforms ?? []).map((p: string) => {
                         return {

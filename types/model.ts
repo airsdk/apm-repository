@@ -52,6 +52,8 @@ export type Parameter = {
   name: string;
   required: boolean;
   defaultValue: string;
+  description?: string;
+  platforms?: Array<Platform>;
 };
 
 export type Tag = {

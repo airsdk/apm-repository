@@ -83,6 +83,7 @@ model Parameter {
   name         String
   required     Boolean    @default(false)
   defaultValue String     @default("")
+  description  String     @default("")
   platforms    Platform[]
 
   packageVersions PackageVersion[]

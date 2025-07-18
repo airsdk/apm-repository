@@ -96,14 +96,14 @@ export default async (req: NextApiRequest, res: NextApiResponse) => {
     packageReq.parameters = [];
   }
   packageReq.parameters = packageReq.parameters.map((p: any) => {
+    console.log( p );
     if (typeof p === "string") {
       p = { name: p } as any;
     }
-    p.name = p.name.toLowerCase();
     p.required = p.required === "true" || p.required === true;
+    p.platforms = (p.platforms || []).filter((platform: any) => validatePlatform(platform));
     return p;
-  })
-    .filter((p: any) => validatePlatform(p.platform));
+  });
 
   // Validate platforms
   if (packageReq.platforms === undefined) {
