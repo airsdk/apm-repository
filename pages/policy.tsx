@@ -44,19 +44,19 @@ export default function PolicyPage() {
             repository moderators. To get an exception you must email{" "}
             <a href="mailto:distriqt@distriqt.com">distriqt@distriqt.com</a>{" "}
             outlining your issue and why the package should be removed. For
-            example,
-            <ul>
-              <li>
-                if you publish a package by mistake and contact the moderators
-                quickly, the moderators will check that no widespread usage of
-                the package has begun and may remove the package;
-              </li>
-              <li>
-                if a package violates the Naming, Content, or Copyright policies
-                below, and a user files a moderation request;
-              </li>
-            </ul>
+            example:
           </p>
+          <ul>
+            <li>
+              if you publish a package by mistake and contact the moderators
+              quickly, the moderators will check that no widespread usage of
+              the package has begun and may remove the package;
+            </li>
+            <li>
+              if a package violates the Naming, Content, or Copyright policies
+              below, and a user files a moderation request;
+            </li>
+          </ul>
         </div>
         <div className={styles.contentSection}>
           <h3>Identifier naming policy</h3>
@@ -73,24 +73,24 @@ export default function PolicyPage() {
           <p>
             Packages may not be published solely to reserve an identifier for
             future use. A package is considered to be name squatting if the
-            package contains no code or libraries that have a useful purpose. We
-            do not scan for packages but rely on the community and moderators to
+            package contains no code or libraries that have a useful purpose.
+            We do not scan for packages but rely on the community and moderators to
             manually identify packages deemed to be name squatting. If you
             believe a package is name squatting follow the steps below:
-            <ul>
-              <li>
-                contact the publisher (via email) as shown on the site and copy
-                distriqt@distriqt.com;
-              </li>
-              <li>
-                politely ask the publisher to explain their intended purpose;
-              </li>
-              <li>
-                if the publisher does not respond forward the thread to
-                distriqt@distriqt.com and a moderator will review;
-              </li>
-            </ul>
           </p>
+          <ul>
+            <li>
+              contact the publisher (via email) as shown on the site and copy
+              distriqt@distriqt.com;
+            </li>
+            <li>
+              politely ask the publisher to explain their intended purpose;
+            </li>
+            <li>
+              if the publisher does not respond forward the thread to
+              distriqt@distriqt.com and a moderator will review;
+            </li>
+          </ul>
           <h4>Trademark infringement</h4>
           <p>
             We respect the importance of trademarks, other proprietary rights
