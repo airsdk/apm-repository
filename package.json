@@ -2,16 +2,20 @@
   "name": "apm-repository",
   "version": "1.0.0",
   "private": true,
+  "type": "module",
   "scripts": {
     "bootstrap": "prisma db push",
     "dev": "next dev",
     "build": "next build",
     "start": "next start",
-    "generate": "prisma generate"
+    "generate": "prisma generate",
+    "postinstall": "prisma generate"
   },
   "dependencies": {
-    "@prisma/client": "^3.15.2",
+    "@prisma/adapter-mariadb": "^7.4.2",
+    "@prisma/client": "^7.4.2",
     "date-fns": "^2.30.0",
+    "dotenv": "^17.3.1",
     "next": "^16.1.5",
     "next-mdx": "^0.6.1",
     "react": "^19.0.0",
@@ -25,11 +29,11 @@
     "unified": "^9.2.0"
   },
   "devDependencies": {
-    "@types/node": "^20.3.1",
+    "@types/node": "^20.19.35",
     "@types/react": "^19.0.0",
     "@types/react-dom": "^19.0.0",
     "@types/styled-components": "^5.1.26",
-    "prisma": "^3.15.2",
+    "prisma": "^7.4.2",
     "swr": "^2.1.5",
     "ts-node": "^10.9.1",
     "typescript": "^5.1.6"

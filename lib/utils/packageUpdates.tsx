@@ -1,8 +1,8 @@
 
 
 import prisma from "../../lib/prisma";
-import type { Package, PackageVersion, Platform } from "@prisma/client";
-import { Prisma } from "@prisma/client";
+import type { Package, PackageVersion, Platform } from "../../generated/prisma/client";
+import { Prisma } from "../../generated/prisma/client";
 
 
 const validateStatus = (status: string): string => {
