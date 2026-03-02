@@ -1,6 +1,6 @@
 import type { NextApiRequest, NextApiResponse } from "next";
 import prisma from "../../../../lib/prisma";
-import type { Platform, Publisher } from "@prisma/client";
+import type { Platform, Publisher } from "../../../../generated/prisma/client";
 import { createNewPackage, getDependencies, getPublisher, updateExistingPackage } from "lib/utils/packageUpdates";
 
 
